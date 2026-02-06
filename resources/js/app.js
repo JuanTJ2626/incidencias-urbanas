@@ -1,4 +1,5 @@
 import './bootstrap'
+import '../css/app.css'
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/inertia-vue3'
 import PrimeVue from 'primevue/config'
@@ -7,7 +8,6 @@ import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 import Button from 'primevue/button'
 
-// Glob para importar todas las vistas automáticamente
 const pages = import.meta.glob('./views/**/*.vue')
 
 createInertiaApp({
