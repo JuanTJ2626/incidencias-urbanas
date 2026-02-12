@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AdminMiddleware
+{
+    public function handle(Request $request, Closure $next)
+    {
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
+        $rol = strtolower(trim(Auth::user()->rol ?? ''));
+
+        if ($rol !== 'administrador' && $rol !== 'admin') {
+            return redirect('/home')->with('error', 'Acceso denegado.');
+        }
+
+        return $next($request);
+    }
+}
