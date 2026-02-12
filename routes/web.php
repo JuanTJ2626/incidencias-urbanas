@@ -6,15 +6,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminMiddleware;
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-});
-Route::get('/home', function () {
-    return Inertia::render('Home');
-});
 
 // Auth (todo se maneja desde AuthController)
 Route::controller(AuthController::class)->group(function () {
+    Route::get('/', 'showLoginForm')->name('login');
     Route::get('/register', 'showRegisterForm')->name('register.show');
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/register', 'register')->name('register');
