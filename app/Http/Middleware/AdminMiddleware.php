@@ -16,7 +16,7 @@ class AdminMiddleware
 
         $rol = strtolower(trim(Auth::user()->rol ?? ''));
 
-        if ($rol !== 'administrador' && $rol !== 'admin') {
+        if ($rol !== 'admin') {
             return redirect('/home')->with('error', 'Acceso denegado.');
         }
 

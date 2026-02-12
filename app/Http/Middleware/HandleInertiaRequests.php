@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Services\MenuService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -35,9 +36,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $menuService = new MenuService();
+
+        $user = $request->user();
+
         return [
             ...parent::share($request),
-            //
+
+            'auth' => [
+                'user' => $user ? $user->only(['id', 'name', 'rol']) : null,
+            ],
+
+            'menu' => $user ? $menuService->getMenu($user) : [],
         ];
     }
 }

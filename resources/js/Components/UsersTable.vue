@@ -9,7 +9,12 @@
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
     :rowsPerPageOptions="rowsPerPageOptions"
   >
-    <Column field="name" header="NOMBRE DEL USUARIO" sortable :style="{ minWidth: '320px' }">
+    <Column
+      field="name"
+      header="NOMBRE DEL USUARIO"
+      sortable
+      :style="{ minWidth: '320px' }"
+    >
       <template #body="{ data }">
         <div class="flex items-center gap-4 py-2">
           <Avatar
@@ -37,9 +42,16 @@
       </template>
     </Column>
 
-    <Column field="created_at" header="FECHA REGISTRO" sortable :style="{ minWidth: '240px' }">
+    <Column
+      field="created_at"
+      header="FECHA REGISTRO"
+      sortable
+      :style="{ minWidth: '240px' }"
+    >
       <template #body="{ data }">
-        <span class="text-sm font-medium text-gray-500">{{ new Date(data.created_at).toLocaleDateString() }}</span>
+        <span class="text-sm font-medium text-gray-500">{{
+          new Date(data.created_at).toLocaleDateString()
+        }}</span>
       </template>
     </Column>
 
@@ -77,17 +89,17 @@ const props = defineProps({
   rows: { type: Number, default: 5 },
   rowsPerPageOptions: { type: Array, default: () => [5, 10, 20] },
   deletingId: { type: [Number, String], default: null },
-})
+});
 
-const emits = defineEmits(['edit', 'delete'])
+const emits = defineEmits(["edit", "delete"]);
 
 const getRolSeverity = (rol) => {
-  const r = (rol || '').toLowerCase()
-  if (r.includes('admin')) return 'danger'
-  if (r.includes('super')) return 'warning'
-  if (r.includes('empleado')) return 'success'
-  return 'info'
-}
+  const r = (rol || "").toLowerCase();
+  if (r.includes("admin")) return "danger";
+  if (r.includes("super")) return "warning";
+  if (r.includes("empleado")) return "success";
+  return "info";
+};
 </script>
 
 <style scoped>

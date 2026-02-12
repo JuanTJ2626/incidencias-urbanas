@@ -73,7 +73,7 @@ class AdminController extends Controller
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);
-        
+
         // No permitir eliminarse a sí mismo
         if ($user->id === auth()->id()) {
             return redirect()->back()->withErrors(['error' => 'No puedes eliminarte a ti mismo.']);
@@ -126,5 +126,10 @@ class AdminController extends Controller
         $user->roles()->sync([$role->id]);
 
         return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    public function testing()
+    {
+        return Inertia::render('admin/Test');
     }
 }

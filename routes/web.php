@@ -18,12 +18,10 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 // Admin (todo se maneja desde AdminController)
-Route::middleware(['auth', AdminMiddleware::class])
-    ->prefix('admin')
-    ->controller(AdminController::class)
-    ->group(function () {
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller(AdminController::class)->group(function () {
         Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
         Route::post('/users', 'storeUser')->name('admin.users.store');
         Route::put('/users/{id}', 'updateUser')->name('admin.users.update');
-        Route::delete('/users/{id}', 'deleteUser')->name('admin.users.delete');
+        Route::delete('/users/{id}', 'deleteUser')->name('admin.users.delete'); 
+        Route::get('/prueba', 'testing')->name('admin.prueba');
     });

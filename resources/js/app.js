@@ -72,5 +72,5 @@ createInertiaApp({
     vueApp.directive('tooltip', Tooltip)
 
     vueApp.mount(el)
-  }
+  },
 })
