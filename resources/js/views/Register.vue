@@ -20,180 +20,162 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="min-h-screen w-full flex overflow-hidden bg-gray-50">
-    <!-- Left Side: Visual / Branding (Mexico Theme) -->
-    <div class="hidden lg:flex lg:w-1/2 relative bg-gray-900 justify-center items-center overflow-hidden">
-      <!-- Background Image -->
+  <div class="min-h-screen w-full flex bg-[#F5F5F7] font-sans selection:bg-[#607C88]/30">
+    <!-- Left Side: Visual / Branding (Apple Style) -->
+    <div class="hidden lg:flex lg:w-5/12 relative bg-black justify-center items-center overflow-hidden">
+      <!-- Background Image with sophisticated blur/overlay -->
       <div 
-        class="absolute inset-0 bg-cover bg-center opacity-70 transform hover:scale-105 transition-transform duration-[30s]"
+        class="absolute inset-0 bg-cover bg-center opacity-100 scale-105"
         style="background-image: url('https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=2670&auto=format&fit=crop');"
       ></div>
       
-      <!-- Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60"></div>
+      <!-- Glass Overlay -->
+      <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
 
-      <!-- Content -->
-      <div class="relative z-10 text-white max-w-xl px-12">
-        <!-- Logo / Brand Header -->
-        <div class="flex items-center gap-4 mb-8">
-             <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
-                <i class="pi pi-shield text-2xl"></i>
+      <div class="relative z-10 p-12 w-full max-w-lg">
+        <!-- Minimalist Brand Header -->
+        <div class="flex items-center gap-4 mb-12">
+            <div class="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-lg">
+                <i class="pi pi-shield text-lg text-[#BFDDEA]"></i>
             </div>
-            <div class="flex flex-col">
-                <span class="text-sm tracking-[0.2em] font-light text-gray-300">REPÚBLICA DIGITAL</span>
-                <span class="text-xl font-bold tracking-wider">GESTIÓN CIUDADANA</span>
+            <div>
+                <h3 class="text-white text-sm font-medium tracking-wide uppercase opacity-90">República Digital</h3>
+                <p class="text-[#A7C5D2] text-xs tracking-wider">Gestión Ciudadana</p>
             </div>
         </div>
 
-        <!-- Main Headline -->
-        <h2 class="text-5xl font-extrabold mb-6 leading-tight">
-          <span class="block">Únete a la</span>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-white to-red-400">Transformación</span>
-        </h2>
+        <!-- Typography Headline -->
+        <h1 class="text-6xl font-semibold text-white mb-6 tracking-tight leading-tight">
+          Un nuevo <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#BFDDEA] to-[#607C88]">estándar.</span>
+        </h1>
         
-        <div class="w-24 h-1.5 bg-gradient-to-r from-green-600 via-white to-red-600 rounded-full mb-8"></div>
-
-        <p class="text-lg text-gray-200 font-light leading-relaxed max-w-lg">
-          Sé parte del cambio. Regístrate en la plataforma nacional para el reporte y atención de servicios públicos.
+        <p class="text-lg text-white/80 font-normal leading-relaxed max-w-sm mb-12">
+          La plataforma diseñada para transformar la manera en que conectamos contigo. Simple. Segura. Eficiente.
         </p>
 
-        <!-- Stats or Badges -->
-        <div class="mt-12 flex gap-8 border-t border-white/10 pt-8">
-             <div>
-                <span class="block text-3xl font-bold">100%</span>
-                <span class="text-xs text-gray-400 uppercase tracking-wider">Transparencia</span>
-             </div>
-             <div>
-                <span class="block text-3xl font-bold">24/7</span>
-                <span class="text-xs text-gray-400 uppercase tracking-wider">Atención Digital</span>
-             </div>
+        <!-- Subtle Slate Indicator -->
+        <div class="flex gap-2 items-center opacity-80">
+            <div class="h-1 w-8 bg-[#607C88] rounded-full blur-[1px]"></div>
+            <div class="h-1 w-8 bg-white rounded-full blur-[1px]"></div>
+            <div class="h-1 w-8 bg-[#90ADB9] rounded-full blur-[1px]"></div>
         </div>
       </div>
     </div>
 
-    <!-- Right Side: Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative overflow-y-auto">
-      <div class="w-full max-w-md">
+    <!-- Right Side: Form (Clean, Spacious, Airy) -->
+    <div class="w-full lg:w-7/12 flex items-center justify-center p-6 lg:p-16 bg-white relative">
+      <div class="w-full max-w-[420px] animate-fade-in-up">
         
-        <!-- Mobile Header (Visible only on small screens) -->
-        <div class="lg:hidden text-center mb-10">
-           <h1 class="text-2xl font-bold text-gray-800">Gestión Ciudadana</h1>
-           <p class="text-gray-500 text-sm">Registro de Usuarios</p>
+        <!-- Header -->
+        <div class="text-center mb-10">
+           <div class="inline-block p-3 rounded-full bg-gray-50 mb-4 lg:hidden">
+                <i class="pi pi-shield text-xl text-[#607C88]"></i>
+           </div>
+           <h2 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Crear una cuenta</h2>
+           <p class="text-gray-500 text-[15px]">Ingresa tus datos para comenzar.</p>
         </div>
 
-        <div class="bg-white p-8 lg:p-10 rounded-3xl shadow-2xl border border-gray-100">
-            <!-- Form Header inside card -->
-            <div class="text-center mb-10">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">Crear Cuenta</h1>
-                 <div class="flex justify-center gap-1 mb-2">
-                    <div class="h-1 w-6 bg-green-600 rounded-full"></div>
-                    <div class="h-1 w-6 bg-gray-300 rounded-full"></div>
-                    <div class="h-1 w-6 bg-red-600 rounded-full"></div>
-                </div>
-                <p class="text-gray-500 text-sm">Ingresa tus datos para registrarte</p>
-            </div>
-
-            <form @submit.prevent="submit" class="space-y-6">
+        <form @submit.prevent="submit" class="space-y-5">
             
             <!-- Rol Selection -->
-            <div class="flex flex-col gap-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Tipo de Usuario</label>
+            <div class="group">
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Tipo de Usuario</label>
                 <Dropdown 
                     v-model="form.rol" 
                     :options="roles" 
                     optionLabel="nombre"
                     optionValue="nombre"
                     placeholder="Selecciona tu rol" 
-                    class="w-full p-inputtext-sm"
+                    class="w-full apple-dropdown"
                     :class="{'p-invalid': form.errors.rol}"
                 />
-                <small v-if="form.errors.rol" class="text-red-500 text-xs ml-1">{{ form.errors.rol }}</small>
+                <small v-if="form.errors.rol" class="text-red-500 text-xs ml-1 mt-1 block">{{ form.errors.rol }}</small>
             </div>
 
             <!-- Name Field -->
-            <div class="flex flex-col gap-2">
-                <label for="name" class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Nombre Completo</label>
-                <div class="relative">
-                     <i class="pi pi-user absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
-                    <InputText 
-                      id="name" 
-                      v-model="form.name" 
-                      class="w-full pl-14 bg-gray-50 border-gray-200 focus:bg-white transition-colors" 
-                      :class="{'p-invalid': form.errors.name}" 
-                      placeholder="Ej. Juan Pérez"
-                    />
-                </div>
-                <small v-if="form.errors.name" class="text-red-500 text-xs ml-1">{{ form.errors.name }}</small>
+            <div class="group">
+                <label for="name" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Nombre Completo</label>
+                <InputText 
+                  id="name" 
+                  v-model="form.name" 
+                  class="apple-input" 
+                  :class="{'p-invalid': form.errors.name}" 
+                  placeholder="Juan Pérez"
+                />
+                <small v-if="form.errors.name" class="text-red-500 text-xs ml-1 mt-1 block">{{ form.errors.name }}</small>
             </div>
 
             <!-- Email Field -->
-            <div class="flex flex-col gap-2">
-                <label for="email" class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Correo Electrónico</label>
-                <div class="relative">
-                    <i class="pi pi-envelope absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
-                    <InputText 
-                      id="email" 
-                      v-model="form.email" 
-                      class="w-full pl-14 bg-gray-50 border-gray-200 focus:bg-white transition-colors" 
-                      :class="{'p-invalid': form.errors.email}" 
-                      placeholder="correo@ejemplo.com"
-                    />
-                </div>
-                <small v-if="form.errors.email" class="text-red-500 text-xs ml-1">{{ form.errors.email }}</small>
+            <div class="group">
+                <label for="email" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Correo Electrónico</label>
+                <InputText 
+                  id="email" 
+                  v-model="form.email" 
+                  class="apple-input" 
+                  :class="{'p-invalid': form.errors.email}" 
+                  placeholder="nombre@ejemplo.com"
+                />
+                <small v-if="form.errors.email" class="text-red-500 text-xs ml-1 mt-1 block">{{ form.errors.email }}</small>
             </div>
 
             <!-- Password Field -->
-            <div class="flex flex-col gap-2">
-                <label for="password" class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Contraseña</label>
-                <div class="relative">
-                     <i class="pi pi-lock absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
-                    <Password 
-                      id="password" 
-                      v-model="form.password" 
-                      toggleMask 
-                      class="w-full" 
-                      inputClass="w-full pl-14 bg-gray-50 border-gray-200 focus:bg-white" 
-                      :class="{'p-invalid': form.errors.password}"
-                      placeholder="••••••••"
-                      :feedback="true"
-                    />
-                </div>
-                <small v-if="form.errors.password" class="text-red-500 text-xs ml-1">{{ form.errors.password }}</small>
+            <div class="group">
+                <label for="password" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Contraseña</label>
+                <Password 
+                  id="password" 
+                  v-model="form.password" 
+                  toggleMask 
+                  class="w-full" 
+                  inputClass="apple-input w-full" 
+                  :class="{'p-invalid': form.errors.password}"
+                  placeholder="••••••••"
+                  :feedback="true"
+                />
+                <small v-if="form.errors.password" class="text-red-500 text-xs ml-1 mt-1 block">{{ form.errors.password }}</small>
             </div>
 
             <!-- Password Confirmation -->
-            <div class="flex flex-col gap-2">
-                <label for="password_confirmation" class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Confirmar Contraseña</label>
-                 <div class="relative">
-                    <i class="pi pi-check-circle absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
-                    <Password 
-                      id="password_confirmation" 
-                      v-model="form.password_confirmation" 
-                      :feedback="false" 
-                      toggleMask 
-                      class="w-full" 
-                      inputClass="w-full pl-14 bg-gray-50 border-gray-200 focus:bg-white" 
-                      :class="{'p-invalid': form.errors.password_confirmation}"
-                      placeholder="••••••••"
-                    />
-                </div>
+            <div class="group">
+                <label for="password_confirmation" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Confirmar Contraseña</label>
+                <Password 
+                  id="password_confirmation" 
+                  v-model="form.password_confirmation" 
+                  :feedback="false" 
+                  toggleMask 
+                  class="w-full" 
+                  inputClass="apple-input w-full" 
+                  :class="{'p-invalid': form.errors.password_confirmation}"
+                  placeholder="••••••••"
+                />
             </div>
 
-            <!-- Submit Button -->
-            <Button 
-                type="submit" 
-                label="REGISTRARME" 
-                class="w-full !bg-green-700 hover:!bg-green-800 !border-green-700 !text-white font-bold tracking-wide py-3 shadow-lg shadow-green-700/30 transition-all transform hover:-translate-y-0.5" 
-                :loading="form.processing"
-            />
-
-            <div class="mt-8 text-center text-sm text-gray-500">
-                ¿Ya tienes cuenta? 
-                <Link href="/login" class="font-bold text-green-700 hover:text-green-900 transition-colors">
-                Ingresa aquí
-                </Link>
+            <!-- Submit Button (Slate Blue Theme) -->
+            <div class="pt-2">
+                <Button 
+                    type="submit" 
+                    label="Continuar" 
+                    class="w-full !bg-[#607C88] hover:!bg-black !border-[#607C88] hover:!border-black !text-white !font-medium !text-[15px] !py-3.5 !rounded-lg !shadow-none transition-all duration-300 transform active:scale-[0.98]" 
+                    :loading="form.processing"
+                />
             </div>
-            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-[13px] text-gray-400">
+                    ¿Ya tienes una cuenta? 
+                    <Link href="/login" class="text-[#607C88] hover:text-[#4a6069] hover:underline font-medium ml-1 transition-colors">
+                        Inicia sesión
+                    </Link>
+                </p>
+            </div>
+        </form>
+
+        <!-- Terms Footer -->
+        <div class="mt-12 pt-6 border-t border-gray-100 text-center">
+            <p class="text-[11px] text-gray-400 leading-normal">
+                Al registrarte, aceptas nuestros <a href="#" class="underline hover:text-gray-600">Términos de Servicio</a> y <a href="#" class="underline hover:text-gray-600">Política de Privacidad</a>.
+                <br>Protegido por reCAPTCHA.
+            </p>
         </div>
       </div>
     </div>
@@ -201,30 +183,76 @@ const submit = () => {
 </template>
 
 <style scoped>
-/* PrimeVue Overrides for this theme */
+/* Apple-style smooth inputs */
+.apple-input {
+    width: 100%;
+    background-color: #f5f5f7; /* Apple light gray */
+    border: 1px solid transparent;
+    border-radius: 12px; /* Smooth rounded corners */
+    padding: 0.8rem 1rem;
+    font-size: 15px;
+    color: #1d1d1f;
+    transition: all 0.2s ease;
+}
+
+.apple-input:hover {
+    background-color: #e8e8ed;
+}
+
+.apple-input:focus {
+    background-color: #ffffff;
+    border-color: #607C88; /* Slate Blue Focus */
+    box-shadow: 0 0 0 4px rgba(96, 124, 136, 0.1);
+    outline: none;
+}
+
+.apple-input::placeholder {
+    color: #86868b;
+}
+
+/* Dropdown Customization */
 :deep(.p-dropdown) {
-    background: #f9fafb;
-    border-color: #e5e7eb;
+    background: #f5f5f7;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+:deep(.p-dropdown:not(.p-disabled):hover) {
+    background: #e8e8ed;
+    border-color: transparent;
 }
 :deep(.p-dropdown:not(.p-disabled).p-focus) {
     background: #ffffff;
-    border-color: #15803d; /* Green-700 */
-    box-shadow: 0 0 0 1px #15803d;
+    border-color: #607C88;
+    box-shadow: 0 0 0 4px rgba(96, 124, 136, 0.1);
+}
+:deep(.p-dropdown-label) {
+    padding: 0.8rem 1rem;
+    font-size: 15px;
 }
 :deep(.p-inputtext) {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-}
-:deep(.p-inputtext:enabled:focus) {
-    border-color: #15803d; /* Green-700 */
-    box-shadow: 0 0 0 1px #15803d;
-}
-:deep(.p-password input) {
-    width: 100%;
+    font-family: inherit;
 }
 
-/* Ensure PrimeVue input doesn't override our left padding */
-:deep(.p-inputtext) {
-  padding-left: 3.5rem; /* pl-14 */
+/* Custom Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>
+
+<script>
+export default {
+  layout: null,
+}
+</script>

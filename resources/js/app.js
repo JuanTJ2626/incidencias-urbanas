@@ -2,6 +2,7 @@ import './bootstrap'
 import '../css/app.css'
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/inertia-vue3'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import PrimeVue from 'primevue/config'
 import 'primevue/resources/themes/lara-light-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -15,6 +16,8 @@ import Checkbox from 'primevue/checkbox'
 import Dropdown from 'primevue/dropdown'
 import ToastService from 'primevue/toastservice'
 import Toast from 'primevue/toast'
+import ConfirmationService from 'primevue/confirmationservice'
+import ConfirmDialog from 'primevue/confirmdialog'
 import Ripple from 'primevue/ripple'
 import Tooltip from 'primevue/tooltip'
 import DataTable from 'primevue/datatable'
@@ -31,13 +34,20 @@ import Badge from 'primevue/badge'
 const pages = import.meta.glob('./views/**/*.vue')
 
 createInertiaApp({
-  resolve: name => pages[`./views/${name}.vue`]().then(module => module.default),
+  resolve: name => pages[`./views/${name}.vue`]().then(module => {
+    const page = module.default
+    if (typeof page.layout === 'undefined') {
+      page.layout = AppLayout
+    }
+    return page
+  }),
   setup({ el, App, props, plugin }) {
     const vueApp = createApp({ render: () => h(App, props) })
 
     vueApp.use(plugin)
     vueApp.use(PrimeVue, { ripple: true })
     vueApp.use(ToastService)
+    vueApp.use(ConfirmationService)
 
     // Global Component Registration
     vueApp.component('Button', Button)
@@ -46,6 +56,7 @@ createInertiaApp({
     vueApp.component('Checkbox', Checkbox)
     vueApp.component('Dropdown', Dropdown)
     vueApp.component('Toast', Toast)
+    vueApp.component('ConfirmDialog', ConfirmDialog)
     vueApp.component('DataTable', DataTable)
     vueApp.component('Column', Column)
     vueApp.component('Dialog', Dialog)
