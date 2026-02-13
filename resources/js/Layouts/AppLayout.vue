@@ -1,11 +1,11 @@
 <template>
-  <div class="flex h-screen bg-[#F5F5F7] overflow-hidden">
+  <div class="flex h-screen overflow-hidden">
     <!-- Sidebar Global -->
     <AppSidebar v-model:visible="sidebarVisible" />
 
     <!-- Content Area with Dynamic Padding to avoid overlap -->
-    <div 
-      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    <div
+      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[#F2F2F7]"
       :class="[sidebarVisible ? 'lg:pl-72' : 'lg:pl-20']"
     >
       <!-- Navbar Global -->
@@ -22,25 +22,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import AppSidebar from '@/Components/AppSidebar.vue'
-import AppNavbar from '@/Components/AppNavbar.vue'
-import AppToast from '@/Components/AppToast.vue'
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import AppSidebar from "@/Components/AppSidebar.vue";
+import AppNavbar from "@/Components/AppNavbar.vue";
+import AppToast from "@/Components/AppToast.vue";
 
-const sidebarVisible = ref(false)
+const sidebarVisible = ref(false);
 
 // Listener para eventos globales si se necesitara disparar el toggle desde fuera
 const onToggleEvent = () => {
-  sidebarVisible.value = !sidebarVisible.value
-}
+  sidebarVisible.value = !sidebarVisible.value;
+};
 
 onMounted(() => {
-  window.addEventListener('toggle-sidebar', onToggleEvent)
-})
+  window.addEventListener("toggle-sidebar", onToggleEvent);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('toggle-sidebar', onToggleEvent)
-})
+  window.removeEventListener("toggle-sidebar", onToggleEvent);
+});
 </script>
 
 <style scoped>
