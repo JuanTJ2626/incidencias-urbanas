@@ -5,10 +5,14 @@
     :rows="rows"
     class="p-datatable-lg"
     scrollable
+    :rowClass="rowClass"
     tableStyle="min-width:900px"
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
     :rowsPerPageOptions="rowsPerPageOptions"
   >
+    <template #paginatorleft>
+      <div class="text-sm font-bold px-3 text-sidebar-primary">Mostrando {{ totalCount }} usuarios</div>
+    </template>
     <Column
       field="name"
       header="NOMBRE DEL USUARIO"
@@ -35,8 +39,8 @@
       <template #body="{ data }">
         <Tag
           :value="data.rol"
-          :severity="getRolSeverity(data.rol)"
-          class="!px-3 !py-1 !text-xs !uppercase !tracking-widest !font-bold"
+          class="role-tag !px-3 !py-1 !text-xs !uppercase !tracking-widest !font-bold"
+          :class="getRolClass(data.rol)"
           rounded
         />
       </template>
@@ -62,28 +66,31 @@
             icon="pi pi-pencil"
             text
             rounded
-            severity="info"
             @click="$emit('edit', data)"
             v-tooltip.top="'Editar'"
-            class="hover:bg-blue-50"
+            class="hover:bg-[#607C88]/10 text-[#607C88]"
           />
           <Button
             icon="pi pi-trash"
             text
             rounded
-            severity="danger"
             :loading="deletingId === data.id"
             @click="$emit('delete', data)"
             v-tooltip.top="'Eliminar'"
-            class="hover:bg-red-50"
+            class="hover:bg-[#850D12]/10 text-[#850D12]"
           />
         </div>
       </template>
     </Column>
+    <template #empty>
+      <div class="p-6 text-center text-gray-500">No hay usuarios para mostrar.</div>
+    </template>
   </DataTable>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
   value: { type: Array, default: () => [] },
   rows: { type: Number, default: 5 },
@@ -93,13 +100,20 @@ const props = defineProps({
 
 const emits = defineEmits(["edit", "delete"]);
 
-const getRolSeverity = (rol) => {
-  const r = (rol || "").toLowerCase();
-  if (r.includes("admin")) return "danger";
-  if (r.includes("super")) return "warning";
-  if (r.includes("empleado")) return "success";
-  return "info";
+// Map roles to sidebar palette classes
+const getRolClass = (rol) => {
+  const r = (rol || '').toLowerCase();
+  if (r.includes('admin')) return 'tag-admin';
+  if (r.includes('super')) return 'tag-super';
+  if (r.includes('empleado')) return 'tag-employee';
+  return 'tag-default';
 };
+
+const rowClass = (data) => {
+  return props.deletingId === data.id ? 'row-deleting' : 'row-hover';
+};
+
+const totalCount = computed(() => props.value.length);
 </script>
 
 <style scoped>
@@ -128,5 +142,47 @@ const getRolSeverity = (rol) => {
 /* Avoid PrimeVue small-text shrinking inside table */
 :deep(.p-datatable .text-sm) {
   font-size: 0.98rem !important;
+}
+
+/* Sidebar palette classes */
+.text-sidebar-primary {
+  color: #850D12; /* sidebar primary red */
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.tag-admin {
+  background: linear-gradient(180deg, #850D12, #F04A4B);
+  color: #fff !important;
+}
+
+.tag-super {
+  background: linear-gradient(180deg, #607C88, #91A3AD);
+  color: #fff !important;
+}
+
+.tag-employee {
+  background: linear-gradient(180deg, #34C759, #2CB24E);
+  color: #06371b !important;
+}
+
+.tag-default {
+  background: #F5F5F7;
+  color: #1D1D1F !important;
+}
+
+/* Row hover and deleting states (subtle, using sidebar tones) */
+:deep(.row-hover:hover) {
+  background: rgba(133,13,18,0.04) !important;
+}
+
+:deep(.row-deleting) {
+  opacity: 0.6 !important;
+  pointer-events: none !important;
 }
 </style>
