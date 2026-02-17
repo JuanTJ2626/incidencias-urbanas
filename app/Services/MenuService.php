@@ -16,7 +16,7 @@ class MenuService
                     'label' => 'GENERAL',
                     'items' => [
                         ['label' => 'Dashboard', 'icon' => 'pi pi-home', 'url' => '/admin/dashboard'],
-                        ['label' => 'Usuarios', 'icon' => 'pi pi-users', 'url' => '/admin/users'],
+                        ['label' => 'Gestion de Usuarios', 'icon' => 'pi pi-users', 'url' => '/admin/usuariosg'],
                         ['label' => 'Reportes', 'icon' => 'pi pi-file', 'url' => '/admin/reportes'],
                         ['label' => 'PRUEBA', 'icon' => 'pi pi-exclamation-triangle', 'url' => '/admin/prueba'],
                     ],

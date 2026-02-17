@@ -1,6 +1,6 @@
 <template>
   <div>
-    Gestión de Usuarios
+    Reportes
   </div>
 </template>
 

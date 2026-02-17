@@ -325,6 +325,7 @@ const submit = () => {
   color: #607C88;
   font-weight: 600;
 }
+
 </style>
 <script>
 export default {

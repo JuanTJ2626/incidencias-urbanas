@@ -132,4 +132,35 @@ class AdminController extends Controller
     {
         return Inertia::render('admin/Test');
     }
+
+    /**
+     * Renderiza la vista de Gestión de Usuarios
+     */
+    public function usersView()
+    {
+        $users = User::all()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'rol' => $user->rol,
+                'created_at' => $user->created_at->format('d/m/Y'),
+            ];
+        });
+
+        $roles = Role::all();
+
+        return Inertia::render('admin/GestionUsuarios', [
+            'users' => $users,
+            'roles' => $roles,
+        ]);
+    }
+
+    /**
+     * Renderiza la vista de Reportes (simple)
+     */
+    public function reportesView()
+    {
+        return Inertia::render('admin/Reportes');
+    }
 }

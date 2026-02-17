@@ -24,4 +24,6 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller
         Route::put('/users/{id}', 'updateUser')->name('admin.users.update');
         Route::delete('/users/{id}', 'deleteUser')->name('admin.users.delete'); 
         Route::get('/prueba', 'testing')->name('admin.prueba');
+        Route::get('/usuariosg', 'usersView');
+        Route::get('/reportes', 'reportesView');
     });
