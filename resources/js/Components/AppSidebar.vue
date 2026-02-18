@@ -17,7 +17,7 @@
 
   <!-- Sidebar Rail Expandible (Super Liquid Glass iOS Style) -->
   <aside
-    class="glass-sidebar bg-white/10 backdrop-blur-[50px] backdrop-saturate-[180%] border-r border-white/30 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar"
+    class="bg-white/10 backdrop-blur-[50px] backdrop-saturate-[180%] border-r border-white/30 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-br-3xl"
     style="
       background-image: linear-gradient(
         170deg,
@@ -62,12 +62,12 @@
         >
           <span
             class="text-3xl font-black tracking-tighter text-[#1D1D1F] leading-none whitespace-nowrap"
-            >Via<span class="text-[#607C88]">App</span></span
+            >SIG<span class="text-[#607C88]">IU</span></span
           >
           <span
             class="text-[11px] font-bold text-[#86868B] uppercase tracking-[0.1em] mt-2 whitespace-nowrap"
-            >Premium Management</span
-          >
+            >Sistema de Gestión
+          </span>
         </div>
       </div>
 
@@ -107,7 +107,7 @@
               :class="
                 $page.url === subItem.url
                   ? 'bg-[#850D12] text-white shadow-lg shadow-[#F04A4B]/20'
-                  : 'text-[#331A1A] hover:bg-[#F5F5F7] hover:text-[#ABA1A1]'
+                  : 'text-[#fffff] hover:bg-[#E0DCDC] hover:text-[#000000]'
               "
             >
               <!-- Icono con Animación Elastic Pop Centrado -->
@@ -118,7 +118,7 @@
                     'text-xl transition-all duration-500 cubic-bezier-elastic group-hover/item:scale-135 group-hover/item:rotate-[12deg]',
                     $page.url === subItem.url
                       ? 'text-[#FFFFFF]'
-                      : 'group-hover/item:text-[#607C88]',
+                      : 'group-hover/item:text-[#000000]',
                   ]"
                 ></i>
               </div>
@@ -286,9 +286,5 @@ onBeforeUnmount(() => setBodyLock(false));
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #e8e8ed;
   border-radius: 10px;
-}
-
-aside {
-  will-change: width, transform;
 }
 </style>

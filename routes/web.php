@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\IncidenciasController;
 use App\Http\Middleware\AdminMiddleware;
 
 
@@ -25,3 +26,5 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller
         Route::delete('/users/{id}', 'deleteUser')->name('admin.users.delete'); 
         Route::get('/prueba', 'testing')->name('admin.prueba');
     });
+
+Route::apiResource('incidencias', IncidenciasController::class);
