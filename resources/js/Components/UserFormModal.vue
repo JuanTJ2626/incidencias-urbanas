@@ -58,7 +58,7 @@
         />
         <Button 
           :label="primaryLabel" 
-          :loading="loading"
+          :loading="form.processing"
           class="!bg-[#1D1D1F] !border-[#1D1D1F] !rounded-2xl !px-10 !py-4 !font-black !shadow-xl hover:!scale-105 active:!scale-95 transition-all" 
           type="submit" 
         />
@@ -68,24 +68,27 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed } from 'vue'
+import { watch, computed } from 'vue'
+import { useForm } from '@inertiajs/inertia-vue3'
+import { useToast } from 'primevue/usetoast'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
   mode: { type: String, default: 'create' }, 
   user: { type: Object, default: () => ({}) },
-  roles: { type: Array, default: () => [] },
-  loading: { type: Boolean, default: false }
+  roles: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['update:visible','save'])
+const emit = defineEmits(['update:visible','saved'])
 
 const internalVisible = computed({
   get: () => props.visible,
   set: (v) => emit('update:visible', v)
 })
 
-const form = reactive({ name: '', email: '', password: '', rol: '' })
+const toast = useToast()
+
+const form = useForm({ name: '', email: '', password: '', rol: '' })
 
 watch(() => props.user, (u) => {
   if (props.mode === 'edit' && u) {
@@ -98,10 +101,7 @@ watch(() => props.user, (u) => {
 
 watch(() => props.mode, (m) => {
   if (m === 'create') {
-    form.name = ''
-    form.email = ''
-    form.password = ''
-    form.rol = ''
+    form.reset()
   }
 })
 
@@ -113,7 +113,30 @@ function close() {
 }
 
 function onSubmit() {
-  emit('save', { name: form.name, email: form.email, password: form.password, rol: form.rol })
+  if (props.mode === 'create') {
+    form.post('/admin/users', {
+      onSuccess: () => {
+        emit('saved')
+        form.reset()
+        emit('update:visible', false)
+        toast.add({ severity: 'success', summary: 'Usuario Creado', detail: 'El usuario ha sido registrado correctamente.', life: 3500 })
+      },
+      onError: () => {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear el usuario.', life: 4000 })
+      }
+    })
+  } else if (props.mode === 'edit' && props.user && props.user.id) {
+    form.put(`/admin/users/${props.user.id}`, {
+      onSuccess: () => {
+        emit('saved')
+        emit('update:visible', false)
+        toast.add({ severity: 'success', summary: 'Actualizado', detail: 'Datos guardados correctamente.', life: 3500 })
+      },
+      onError: () => {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un problema al actualizar.', life: 4000 })
+      }
+    })
+  }
 }
 </script>
 

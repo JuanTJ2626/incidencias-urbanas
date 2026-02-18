@@ -1,6 +1,6 @@
 <template>
   <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="w-full px-6 py-3 flex items-center justify-between">
       <!-- Left: menu + brand -->
         <div class="flex items-center gap-4"> 
           <Button
@@ -26,9 +26,12 @@
             shape="circle" 
             class="!bg-white !text-[#607C88] shadow-sm !font-bold border border-gray-100 !w-9 !h-9" 
           />
-          <div class="hidden sm:flex flex-col leading-none">
-            <span class="text-sm font-semibold text-gray-900">{{ userName }}</span>
-            <span class="text-[10px] text-gray-400 font-medium">En línea</span>
+          <div class="hidden sm:flex flex-col leading-none items-end">
+            <span class="text-sm font-semibold text-gray-900 uppercase">{{ userNameUpper }}</span>
+            <span class="text-[10px] text-green-600 font-medium flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
+              En línea
+            </span>
           </div>
         </div>
       </div>
@@ -63,6 +66,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', handleResize))
 const page = usePage()
 const user = computed(() => page.props.value.auth?.user ?? { name: 'Usuario' })
 const userName = computed(() => user.value.name ?? 'Usuario')
+const userNameUpper = computed(() => (userName.value || 'Usuario').toUpperCase())
 const initial = computed(() => (user.value.name ? user.value.name.charAt(0).toUpperCase() : 'U'))
 
 const emitToggle = () => emit('toggleSidebar')

@@ -92,7 +92,7 @@ class AuthController extends Controller
 
         // Permitimos 'administrador', 'admin', o variantes
         if ($rol === 'administrador' || $rol === 'admin') {
-            return redirect('/admin/dashboard');
+            return redirect('/admin/usuariosg');
         }
 
         return redirect('/home');
