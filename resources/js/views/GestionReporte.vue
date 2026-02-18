@@ -2,80 +2,42 @@
   <div>
     <h2>REPORTES Incidencias</h2>
 
-    <DataTable
-      :value="customers"
-      paginator
-      :rows="5"
-      :rowsPerPageOptions="[5, 10, 20, 50]"
-      tableStyle="min-width: 50rem"
-    >
-      <Column header="Name" style="width: 10%">
-        <template #body="slotProps">
-          <strong>{{ slotProps.data.name }}</strong>
-        </template>
-      </Column>
+    <div v-if="loading" class="py-6">Cargando incidencias...</div>
+    <div v-else>
+      <div v-if="error" class="text-red-600 mb-4">Error: {{ error }}</div>
 
-      <Column header="Country" style="width: 10%">
-        <template #body="slotProps">
-          {{ slotProps.data.country.toUpperCase() }}
-        </template>
-      </Column>
-
-      <Column field="company" header="Company" style="width: 10%"></Column>
-      <Column field="representative" header="Representative" style="width: 10%"></Column>
-    </DataTable>
+      <AutoTable :value="customers" :rows="5" />
+    </div>
   </div>
 </template>
 
 <script>
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
+import AutoTable from '@/Components/AutoTable.vue'
 
 export default {
   components: {
-    DataTable,
-    Column,
+    AutoTable,
   },
   data() {
     return {
-      customers: [
-        {
-          id: 1,
-          name: "Juan Pérez",
-          country: "Mexico",
-          company: "Empresa A",
-          representative: "Maria",
-        },
-        {
-          id: 2,
-          name: "Ana Gómez",
-          country: "Colombia",
-          company: "Empresa B",
-          representative: "Carlos",
-        },
-        {
-          id: 3,
-          name: "Luis Martínez",
-          country: "Argentina",
-          company: "Empresa C",
-          representative: "Lucía",
-        },
-        {
-          id: 4,
-          name: "Sofía Díaz",
-          country: "Chile",
-          company: "Empresa D",
-          representative: "Pedro",
-        },
-        {
-          id: 5,
-          name: "Carlos Ruiz",
-          country: "Peru",
-          company: "Empresa E",
-          representative: "Elena",
-        },
-      ],
+      customers: [],
+      loading: false,
+      error: null,
     };
+  },
+  async mounted() {
+    this.loading = true;
+    try {
+      const res = await axios.get('/incidencias', { headers: { Accept: 'application/json' } });
+      // If API returns pagination or data array, normalize
+      this.customers = Array.isArray(res.data) ? res.data : res.data.data || res.data;
+      console.log('Incidencias fetched:', this.customers)
+    } catch (e) {
+      this.error = e.response?.data || e.message;
+      console.error('Error cargando incidencias', e);
+    } finally {
+      this.loading = false;
+    }
   },
 };
 </script>
