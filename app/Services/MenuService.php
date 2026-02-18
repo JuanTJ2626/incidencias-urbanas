@@ -18,6 +18,7 @@ class MenuService
                         ['label' => 'Gestion de Usuarios', 'icon' => 'pi pi-users', 'url' => '/admin/usuariosg'],
                         ['label' => 'Reportes', 'icon' => 'pi pi-file', 'url' => '/admin/reportes'],
                         ['label' => 'PRUEBA', 'icon' => 'pi pi-exclamation-triangle', 'url' => '/admin/prueba'],
+                        ['label' => 'Reportes - Ciudadanos', 'icon' => 'pi pi-file-plus', 'url' => '/reportes/gestion-reportes'],
                     ],
                 ],
                 [

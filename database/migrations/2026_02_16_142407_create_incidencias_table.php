@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('latitud', 10,6)->nullable();
             $table->decimal('longitud', 10,6)->nullable();
             $table->string('tipo_incidencia');
-            $table->string('descripción')->nullable();
+            $table->string('descripcion')->nullable();
             $table->string('estatus');
             $table->string('foto');
             $table->timestamps();

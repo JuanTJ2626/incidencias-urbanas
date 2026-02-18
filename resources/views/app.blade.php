@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Laravel + Inertia</title>
+    <title>Sistema de Gestión</title>
     @vite('resources/js/app.js')
 </head>
 <body>

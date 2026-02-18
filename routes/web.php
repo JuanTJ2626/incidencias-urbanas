@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\IncidenciasController;
@@ -18,13 +17,17 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-// Admin (todo se maneja desde AdminController)
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller(AdminController::class)->group(function () {
-        Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
-        Route::post('/users', 'storeUser')->name('admin.users.store');
-        Route::put('/users/{id}', 'updateUser')->name('admin.users.update');
-        Route::delete('/users/{id}', 'deleteUser')->name('admin.users.delete'); 
-        Route::get('/prueba', 'testing')->name('admin.prueba');
+    Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::get('/prueba', 'testing')->name('admin.prueba');
+    Route::get('/usuariosg', 'usersView');
+    });
+    
+    Route::apiResource('incidencias', IncidenciasController::class);
+    Route::middleware('auth')->prefix('reportes')->group(function () {
+        Route::get('/gestion-reportes', [IncidenciasController::class, 'showIncidencias'])->name('showIncidencias');
     });
 
-Route::apiResource('incidencias', IncidenciasController::class);
