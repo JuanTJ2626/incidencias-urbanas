@@ -13,7 +13,6 @@ class MenuService
         return match ($user->rol) {
             'admin' => [
                 [
-                    'label' => 'GENERAL',
                     'items' => [
                         ['label' => 'Dashboard', 'icon' => 'pi pi-home', 'url' => '/admin/dashboard'],
                         ['label' => 'Gestion de Usuarios', 'icon' => 'pi pi-users', 'url' => '/admin/usuariosg'],
