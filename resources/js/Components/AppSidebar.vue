@@ -17,23 +17,24 @@
 
   <!-- Sidebar Rail Expandible (Super Liquid Glass iOS Style) -->
   <aside
-    class="bg-white/10 backdrop-blur-[50px] backdrop-saturate-[180%] border-r border-white/30 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-br-3xl"
-    style="
-      background-image: linear-gradient(
-        170deg,
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0) 50%,
-        rgba(255, 255, 255, 0.05) 100%
-      );
-    "
+    class="bg-white/10 dark:bg-gray-900/95 backdrop-blur-[50px] backdrop-saturate-[180%] border-r border-white/40 dark:border-gray-800 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-br-3xl"
     :class="[
       isHovered || visible ? 'w-72 shadow-[0_0_120px_rgba(0,0,0,0.1)]' : 'w-20 shadow-sm',
       visible ? 'translate-x-0 max-lg:w-full' : 'max-lg:-translate-x-full',
     ]"
+    :style="[
+      {
+        backgroundImage: isDark
+          ? 'linear-gradient(170deg, rgba(17,24,39,0.9) 0%, rgba(17,24,39,0.6) 50%, rgba(17,24,39,0.8) 100%)'
+          : 'linear-gradient(170deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.08) 100%)'
+      },
+      visible ? { height: '100dvh' } : {}
+    ]"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
-    :style="visible ? { height: '100dvh' } : {}"
   >
+    <!-- Sutil overlay blanco desvanecido (modo claro) -->
+    <div v-if="!isDark" class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.02) 100%); mix-blend-mode: overlay;"></div>
     <!-- Header: Apple Brand Identity -->
     <div
       class="h-36 flex items-center shrink-0 overflow-hidden relative"
@@ -61,11 +62,11 @@
           "
         >
           <span
-            class="text-3xl font-black tracking-tighter text-[#1D1D1F] leading-none whitespace-nowrap"
+            class="text-3xl font-black tracking-tighter text-[#1D1D1F] dark:text-white leading-none whitespace-nowrap"
             >SIG<span class="text-[#607C88]">IU</span></span
           >
           <span
-            class="text-[11px] font-bold text-[#86868B] uppercase tracking-[0.1em] mt-2 whitespace-nowrap"
+            class="text-[11px] font-bold text-[#86868B] dark:text-gray-400 uppercase tracking-[0.1em] mt-2 whitespace-nowrap"
             >Sistema de Gestión
           </span>
         </div>
@@ -74,7 +75,7 @@
       <!-- Close button for mobile -->
       <Button
         v-if="visible"
-        class="lg:hidden absolute top-6 right-4 !p-0 !w-10 !h-10 text-[#86868B] hover:text-[#1D1D1F] bg-[#F5F5F7] rounded-xl border border-[#E8E8ED] transition-all"
+        class="lg:hidden absolute top-6 right-4 !p-0 !w-10 !h-10 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-white bg-[#F5F5F7] dark:bg-gray-800 rounded-xl border border-[#E8E8ED] dark:border-gray-700 transition-all"
         icon="pi pi-times"
         text
         rounded
@@ -89,7 +90,7 @@
           <!-- iOS Style Header -->
           <div
             v-if="item.label"
-            class="px-5 mb-4 text-[11px] font-red text-[#86868B]/50 uppercase tracking-[0.2em] transition-all duration-500"
+            class="px-5 mb-4 text-[11px] font-red text-[#86868B]/50 dark:text-gray-500 uppercase tracking-[0.2em] transition-all duration-500"
             :class="
               isHovered || visible ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
             "
@@ -107,7 +108,7 @@
               :class="
                 $page.url === subItem.url
                   ? 'bg-[#850D12] text-white shadow-lg shadow-[#F04A4B]/20'
-                  : 'text-[#fffff] hover:bg-[#E0DCDC] hover:text-[#000000]'
+                  : 'text-[#1D1D1F] dark:text-gray-300 hover:bg-[#E0DCDC] dark:hover:bg-gray-800 hover:text-[#000000] dark:hover:text-white'
               "
             >
               <!-- Icono con Animación Elastic Pop Centrado -->
@@ -175,11 +176,11 @@
           class="ml-3 flex-1 overflow-hidden transition-all duration-500"
           :class="isHovered || visible ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'"
         >
-          <h4 class="text-sm font-bold text-[#1D1D1F] truncate tracking-tight">
+          <h4 class="text-sm font-bold text-[#1D1D1F] dark:text-white truncate tracking-tight">
             {{ displayUser.name }}
           </h4>
           <p
-            class="text-[10px] text-[#86868B] font-bold uppercase tracking-tight truncate"
+            class="text-[10px] text-[#86868B] dark:text-gray-400 font-bold uppercase tracking-tight truncate"
           >
             {{ displayUser.rol }}
           </p>
@@ -204,6 +205,9 @@ import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/inertia-vue3";
 import { computed, ref, watch, onBeforeUnmount } from "vue";
 import { Link } from "@inertiajs/inertia-vue3";
+import { useDarkMode } from "@/composables/useDarkMode";
+
+const { isDark } = useDarkMode();
 const props = defineProps({
   visible: { type: Boolean, default: false },
   items: { type: Array, default: () => [] },

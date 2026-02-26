@@ -1,12 +1,16 @@
 <template>
-  <div class="animate-fade-in">
-    <!-- Header Section -->
-    <div class="mb-12">
-      <h1 class="text-4xl font-black tracking-tight text-[#1D1D1F]">Dashboard</h1>
-      <p class="text-[#86868B] font-semibold mt-2">
-        Bienvenido al panel central de ViaApp.
-      </p>
-    </div>
+  <div class="animate-fade-in py-6 pl-4 pr-6">
+    <PageHeader
+      title="Gestión de Usuarios"
+      subtitle="Gestiona los usuarios del sistema, asigna roles y administra permisos."
+    >
+      <template #actions>
+        <!-- ejemplo: botón para crear o filtros -->
+        <div class="flex items-center gap-3">
+          <slot name="header-actions" />
+        </div>
+      </template>
+    </PageHeader>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">

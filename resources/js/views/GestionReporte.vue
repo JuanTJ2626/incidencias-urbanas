@@ -1,12 +1,25 @@
 <template>
-  <div>
-    <h2>REPORTES Incidencias</h2>
+  <div class="animate-fade-in py-6 pl-4 pr-6">
+    <PageHeader
+      title="Reportes - Ciudadanos"
+      subtitle="Administra y da seguimiento a las incidencias reportadas."
+    >
+      <template #actions>
+        <!-- ejemplo: botón para crear o filtros -->
+        <div class="flex items-center gap-3">
+          <slot name="header-actions" />
+        </div>
+      </template>
+    </PageHeader>
 
-    <div v-if="loading" class="py-6">Cargando incidencias...</div>
-    <div v-else>
+    <div class="bg-white border border-[#E8E8ED] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.03)] p-4">
       <div v-if="error" class="text-red-600 mb-4">Error: {{ error }}</div>
 
-      <AutoTable :value="customers" :rows="5" />
+      <AutoTable :value="customers" :rows="10" :loading="loading">
+        <template #title>
+          Listado de Registros
+        </template>
+      </AutoTable>
     </div>
   </div>
 </template>
@@ -15,9 +28,7 @@
 import AutoTable from '@/Components/AutoTable.vue'
 
 export default {
-  components: {
-    AutoTable,
-  },
+  components: { AutoTable },
   data() {
     return {
       customers: [],

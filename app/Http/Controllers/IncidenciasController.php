@@ -24,7 +24,7 @@ class IncidenciasController extends Controller
             'latitud' => 'nullable|numeric',
             'longitud' => 'nullable|numeric',
             'tipo_incidencia' => 'required|string',
-            'descripción' => 'nullable|string',
+            'descripcion' => 'nullable|string',
             'estatus' => 'required|string',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -54,7 +54,7 @@ class IncidenciasController extends Controller
             'latitud' => 'nullable|numeric',
             'longitud' => 'nullable|numeric',
             'tipo_incidencia' => 'sometimes|string',
-            'descripción' => 'nullable|string',
+            'descripcion' => 'nullable|string',
             'estatus' => 'sometimes|string',
             'foto' => 'nullable|string',
         ]);

@@ -21,12 +21,7 @@ class MenuService
                         ['label' => 'Reportes - Ciudadanos', 'icon' => 'pi pi-file-plus', 'url' => '/reportes/gestion-reportes'],
                     ],
                 ],
-                [
-                    'label' => 'GESTIÓN',
-                    'items' => [
-                        ['label' => 'Configuración', 'icon' => 'pi pi-cog', 'url' => '/admin/config'],
-                    ],
-                ],
+              
             ],
 
             'trabajador' => [
