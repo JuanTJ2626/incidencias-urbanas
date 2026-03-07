@@ -495,7 +495,7 @@ export default {
 </script>
 
 <style scoped>
-/* Los estilos de la tabla los maneja AutoTable.vue internamente */
+/* Los estilos dde la tabla los maneja AutoTable.vue internamente */
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 .animate-fade-in { animation: fadeIn .35s ease-out forwards }
 </style>
