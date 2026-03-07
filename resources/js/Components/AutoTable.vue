@@ -1,5 +1,6 @@
+
 <template>
-    
+
     <!-- Estado de Carga (Skeleton) -->
     <div v-if="loading" class="p-4">
       <!-- Header Skeleton -->
@@ -39,7 +40,7 @@
     <!-- Tabla Real -->
     <DataTable
       v-else
-      :value="value"
+      :value="filteredValue"
       :paginator="paginator"
       :rows="rows"
       :rowsPerPageOptions="rowsPerPageOptions"
@@ -63,13 +64,17 @@
             </div>
           </div>
           
-          <div class="relative w-full sm:w-auto group">
-            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#850D12] transition-colors duration-300" />
-            <InputText 
-              v-model="globalFilter" 
-              placeholder="Buscar en todos los campos..." 
-              class="w-full sm:w-72 pl-11 pr-4 py-2.5 bg-gray-50/50 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#850D12]/20 focus:border-[#850D12] transition-all duration-300" 
-            />
+          <div class="flex items-center gap-3">
+            <!-- Slot para botones extra en el toolbar -->
+            <slot name="toolbar" />
+            <div class="relative group">
+              <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#850D12] transition-colors duration-300" />
+              <InputText
+                v-model="globalFilter"
+                placeholder="Buscar en todos los campos..."
+                class="w-full sm:w-72 pl-11 pr-4 py-2.5 bg-gray-50/50 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#850D12]/20 focus:border-[#850D12] transition-all duration-300"
+              />
+            </div>
           </div>
         </div>
       </template>
@@ -83,6 +88,7 @@
         </div>
       </template>
 
+      <!-- Columnas auto-detectadas -->
       <Column
         v-for="col in columns"
         :key="col"
@@ -91,31 +97,42 @@
         sortable
       >
         <template #body="{ data }">
-          <template v-if="col === 'foto' && data[col]">
-            <div class="flex items-center">
-              <div class="relative group cursor-pointer">
-                <div class="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <i class="pi pi-eye text-white"></i>
-                </div>
-                <img 
-                  :src="`/storage/${data[col]}`" 
-                  alt="Foto" 
-                  class="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100 transition-transform duration-300 group-hover:scale-105"
-                />
+          <!-- Slot override: #col-{fieldname} -->
+          <slot v-if="$slots['col-' + col]" :name="'col-' + col" :data="data" :value="data[col]" />
+
+          <!-- Renderizado por defecto: foto -->
+          <template v-else-if="isFotoField(col) && data[col]">
+            <div class="relative group cursor-pointer w-fit">
+              <div class="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <i class="pi pi-eye text-white"></i>
               </div>
+              <img
+                :src="`/storage/${data[col]}`"
+                alt="Foto"
+                class="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100 transition-transform duration-300 group-hover:scale-105"
+              />
             </div>
           </template>
-          <template v-else-if="col === 'estatus'">
-            <div class="flex items-center">
-              <span :class="getStatusBadgeClass(data[col])" class="px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide shadow-sm flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
-                {{ formatCell(data[col]) }}
-              </span>
-            </div>
+
+          <!-- Renderizado por defecto: campos tipo estatus -->
+          <template v-else-if="isStatusField(col)">
+            <span :class="getStatusBadgeClass(data[col])" class="px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide shadow-sm flex items-center gap-1.5 w-fit">
+              <span class="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
+              {{ formatCell(data[col]) }}
+            </span>
           </template>
+
+          <!-- Renderizado genérico -->
           <template v-else>
             <span class="text-[15px] font-medium text-[#1D1D1F]">{{ formatCell(data[col]) }}</span>
           </template>
+        </template>
+      </Column>
+
+      <!-- Columna de acciones (solo si se pasa el slot #actions) -->
+      <Column v-if="$slots.actions" :header="actionsHeader" :style="{ minWidth: actionsWidth }">
+        <template #body="{ data }">
+          <slot name="actions" :data="data" />
         </template>
       </Column>
 
@@ -136,51 +153,84 @@ import { computed, ref } from 'vue'
 import InputText from 'primevue/inputtext'
 import Skeleton from 'primevue/skeleton'
 
+// ─── Palabras clave que identifican campos de imagen / estatus ─────────
+const FOTO_KEYWORDS   = ['foto', 'imagen', 'image', 'photo', 'picture', 'thumbnail']
+const STATUS_KEYWORDS = ['estatus', 'status', 'estado', 'estado_actual']
+
 const props = defineProps({
-  value: { type: Array, default: () => [] },
-  rows: { type: Number, default: 10 },
-  paginator: { type: Boolean, default: true },
-  rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50] },
-  tableStyle: { type: String, default: 'min-width: 50rem' },
-  loading: { type: Boolean, default: false },
+  value:             { type: Array,   default: () => [] },
+  rows:              { type: Number,  default: 10 },
+  paginator:         { type: Boolean, default: true },
+  rowsPerPageOptions:{ type: Array,   default: () => [5, 10, 20, 50] },
+  tableStyle:        { type: String,  default: 'min-width: 50rem' },
+  loading:           { type: Boolean, default: false },
+  /** Columnas a excluir del auto-detect */
+  excludeColumns:    { type: Array,   default: () => ['created_at', 'updated_at'] },
+  /** Encabezado de la columna de acciones */
+  actionsHeader:     { type: String,  default: 'Acciones' },
+  /** Ancho mínimo de la columna de acciones */
+  actionsWidth:      { type: String,  default: '200px' },
 })
 
 const globalFilter = ref('')
 
 const totalCount = computed(() => props.value.length)
 
+/** Columnas auto-detectadas respetando excludeColumns */
 const columns = computed(() => {
-  if (!props.value || !props.value.length) return []
-  return Object.keys(props.value[0]).filter(key => !['created_at', 'updated_at'].includes(key))
+  if (!props.value?.length) return []
+  return Object.keys(props.value[0]).filter(key => !props.excludeColumns.includes(key))
 })
 
+/** Filtra filas según el texto buscado */
+const filteredValue = computed(() => {
+  if (!globalFilter.value) return props.value
+  const q = globalFilter.value.toLowerCase()
+  return props.value.filter(row =>
+    Object.values(row).some(v => v != null && String(v).toLowerCase().includes(q))
+  )
+})
+
+/** Detecta si un campo es de tipo imagen */
+function isFotoField(key) {
+  return FOTO_KEYWORDS.some(k => key.toLowerCase().includes(k))
+}
+
+/** Detecta si un campo es de tipo estatus */
+function isStatusField(key) {
+  return STATUS_KEYWORDS.some(k => key.toLowerCase().includes(k))
+}
+
+/** Convierte snake_case / camelCase en título legible */
 function prettyHeader(key) {
   return String(key)
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, c => c.toUpperCase())
 }
 
+/** Formatea cualquier valor para mostrarlo en la celda */
 function formatCell(val) {
   if (val === null || val === '' || typeof val === 'undefined') return '—'
   if (typeof val === 'boolean') return val ? 'Sí' : 'No'
   if (typeof val === 'object') return JSON.stringify(val)
-  
-  const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+  const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
   if (typeof val === 'string' && dateRegex.test(val)) {
     return new Date(val).toLocaleDateString('es-MX', {
-      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
     })
   }
-  
   return String(val)
 }
 
+/** Clase CSS del badge de estatus */
 function getStatusBadgeClass(status) {
-  const s = String(status).toLowerCase()
-  if (s.includes('pendiente') || s.includes('espera')) return 'bg-amber-50 text-amber-600 border border-amber-200/50'
-  if (s.includes('resuelto') || s.includes('completado') || s.includes('activo')) return 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
-  if (s.includes('rechazado') || s.includes('cancelado') || s.includes('inactivo')) return 'bg-rose-50 text-rose-600 border border-rose-200/50'
-  if (s.includes('proceso')) return 'bg-sky-50 text-sky-600 border border-sky-200/50'
+  const s = String(status ?? '').toLowerCase()
+  if (s.includes('pendiente') || s.includes('espera'))     return 'bg-amber-50 text-amber-600 border border-amber-200/50'
+  if (s.includes('resuelto')  || s.includes('completado') || s.includes('activo'))  return 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
+  if (s.includes('rechazado') || s.includes('cancelado')  || s.includes('inactivo')) return 'bg-rose-50 text-rose-600 border border-rose-200/50'
+  if (s.includes('proceso'))  return 'bg-sky-50 text-sky-600 border border-sky-200/50'
   return 'bg-gray-50 text-gray-600 border border-gray-200/50'
 }
 </script>

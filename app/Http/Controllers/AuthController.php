@@ -95,6 +95,11 @@ class AuthController extends Controller
             return redirect('/admin/usuariosg');
         }
 
+        // Redirigir trabajadores al dashboard correspondiente
+        if ($rol === 'trabajador' || $rol === 'worker' || $rol === 'contratista') {
+            return redirect('/trabajador/dashboard');
+        }
+
         return redirect('/home');
     }
 }

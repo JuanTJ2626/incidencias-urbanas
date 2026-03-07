@@ -59,6 +59,24 @@
       </template>
     </Column>
 
+    <Column field="activo" header="ESTADO" :style="{ minWidth: '130px' }">
+      <template #body="{ data }">
+        <button
+          @click="$emit('toggle-activo', data)"
+          v-tooltip.top="data.activo ? 'Clic para desactivar' : 'Clic para activar'"
+          :class="[
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all',
+            data.activo
+              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+              : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+          ]"
+        >
+          <i :class="data.activo ? 'pi pi-check-circle' : 'pi pi-ban'"></i>
+          {{ data.activo ? 'Activo' : 'Inactivo' }}
+        </button>
+      </template>
+    </Column>
+
     <Column header="ACCIONES" bodyClass="text-right" :style="{ minWidth: '140px' }">
       <template #body="{ data }">
         <div class="flex justify-end gap-2">
@@ -98,7 +116,7 @@ const props = defineProps({
   deletingId: { type: [Number, String], default: null },
 });
 
-const emits = defineEmits(["edit", "delete"]);
+const emits = defineEmits(["edit", "delete", "toggle-activo"]);
 
 // Map roles to sidebar palette classes
 const getRolClass = (rol) => {

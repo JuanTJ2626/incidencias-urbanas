@@ -31,6 +31,8 @@ import Avatar from 'primevue/avatar'
 import Menu from 'primevue/menu'
 import Badge from 'primevue/badge'
 import PageHeader from '@/Components/PageHeader.vue'
+import DataCards   from '@/Components/DataCards.vue'
+import StatsGrid   from '@/Components/StatsGrid.vue'
 
 const pages = import.meta.glob('./views/**/*.vue')
 
@@ -69,6 +71,8 @@ createInertiaApp({
     vueApp.component('Menu', Menu)
     vueApp.component('Badge', Badge)
     vueApp.component('PageHeader', PageHeader)
+    vueApp.component('DataCards', DataCards)
+    vueApp.component('StatsGrid', StatsGrid)
 
     vueApp.directive('ripple', Ripple)
     vueApp.directive('tooltip', Tooltip)

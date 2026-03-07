@@ -13,43 +13,7 @@
     </PageHeader>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-      <div
-        v-for="(card, idx) in statCards"
-        :key="idx"
-        v-ripple
-        class="p-ripple bg-white p-8 rounded-[2.2rem] shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-[#E8E8ED] flex flex-col gap-6 hover:-translate-y-2 transition-all duration-500 group cursor-pointer overflow-hidden relative"
-        :class="[card.hoverColor, card.rippleClass]"
-      >
-        <div
-          class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 group-hover:scale-150 group-hover:rotate-12 transition-all duration-700"
-        >
-          <i :class="[card.icon, 'text-6xl text-[#1D1D1F] group-hover:text-white']"></i>
-        </div>
-        <div
-          class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-all duration-500 group-hover:bg-white/20 group-hover:scale-110 group-hover:shadow-none"
-          :class="card.bgClass"
-        >
-          <i
-            :class="[
-              card.icon,
-              card.textClass,
-              'group-hover:text-white transition-colors',
-            ]"
-          ></i>
-        </div>
-        <div>
-          <span
-            class="block text-[#86868B] text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-white/70 transition-colors"
-            >{{ card.label }}</span
-          >
-          <span
-            class="block text-4xl font-black text-[#1D1D1F] tracking-tighter mt-1 group-hover:text-white transition-all transform origin-left"
-            >{{ card.value }}</span
-          >
-        </div>
-      </div>
-    </div>
+    <StatsGrid :stats="statCards" />
 
     <!-- Directory Section -->
     <div
@@ -94,6 +58,7 @@
           :deletingId="deletingId"
           @edit="openEditDialog"
           @delete="deleteUser"
+          @toggle-activo="toggleActivo"
         />
       </div>
     </div>
@@ -120,8 +85,9 @@ import { ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import UsersTable from "../../Components/UsersTable.vue";
+import UsersTable   from "../../Components/UsersTable.vue";
 import UserFormModal from "../../Components/UserFormModal.vue";
+import StatsGrid     from "../../Components/StatsGrid.vue";
 
 const props = defineProps({
   users: Array,
@@ -207,6 +173,30 @@ const openEditDialog = (user) => {
 const onModalSaved = () => {
   // reload page data to reflect changes
   Inertia.reload({ only: ['users'] })
+}
+
+const toggleActivo = (user) => {
+  const accion = user.activo ? 'desactivar' : 'activar'
+  confirm.require({
+    message: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} la cuenta de ${user.name}?`,
+    header: `${accion.charAt(0).toUpperCase() + accion.slice(1)} usuario`,
+    icon: user.activo ? 'pi pi-ban' : 'pi pi-check-circle',
+    acceptLabel: accion.charAt(0).toUpperCase() + accion.slice(1),
+    rejectLabel: 'Cancelar',
+    acceptClass: user.activo ? 'p-button-danger !rounded-xl !font-bold' : 'p-button-success !rounded-xl !font-bold',
+    rejectClass: 'p-button-secondary p-button-text !rounded-xl !font-bold',
+    accept: () => {
+      Inertia.patch(`/admin/users/${user.id}/toggle-activo`, {}, {
+        onSuccess: () => toast.add({
+          severity: user.activo ? 'warn' : 'success',
+          summary: user.activo ? 'Desactivado' : 'Activado',
+          detail: `La cuenta de ${user.name} fue ${user.activo ? 'desactivada' : 'activada'}.`,
+          life: 3500,
+        }),
+        onError: () => toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cambiar el estado.', life: 3500 }),
+      })
+    },
+  })
 }
 
 const deleteUser = (user) => {
