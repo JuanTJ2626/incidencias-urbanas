@@ -1,7 +1,7 @@
 <template>
   <div class="animate-fade-in py-6 pl-4 pr-6">
     <PageHeader
-      title="Mis Órdenes de Trabajo"
+      title="Mis Órdenes de Trddabajo"
       subtitle="Tareas asignadas. Confirma tu presencia y cierra cada orden con foto de evidencia."
     >
       <template #actions>
