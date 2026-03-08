@@ -1,81 +1,91 @@
 <template>
-  <!-- Overlay Backdrop - Estilo Humo Apple (glass) -->
+  <!-- Overlay Backdrop - Glass Premium -->
   <div
     v-if="visible"
-    class="lg:hidden fixed inset-0 z-40 transition-opacity"
+    class="lg:hidden fixed inset-0 z-40 transition-all duration-500"
     style="
       background: linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.02),
-        rgba(13, 18, 23, 0.18)
+        rgba(0, 0, 0, 0.4),
+        rgba(0, 0, 0, 0.6)
       );
-      backdrop-filter: blur(6px) saturate(120%);
-      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
     "
     @click="toggle"
   ></div>
 
-  <!-- Sidebar Rail Expandible (Super Liquid Glass iOS Style) -->
+  <!-- Sidebar Premium Glass -->
   <aside
-    class="bg-white/10 dark:bg-gray-900/95 backdrop-blur-[50px] backdrop-saturate-[180%] border-r border-white/40 dark:border-gray-800 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-br-3xl"
+    class="bg-white/80 dark:bg-gray-900/95 backdrop-blur-[60px] backdrop-saturate-[200%] border-r border-white/50 dark:border-gray-700/50 z-50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar"
     :class="[
-      isHovered || visible ? 'w-72 shadow-[0_0_120px_rgba(0,0,0,0.1)]' : 'w-20 shadow-sm',
+      isHovered || visible ? 'w-80 shadow-[0_0_80px_rgba(138,21,56,0.15)]' : 'w-24 shadow-xl',
       visible ? 'translate-x-0 max-lg:w-full' : 'max-lg:-translate-x-full',
     ]"
     :style="[
       {
         backgroundImage: isDark
-          ? 'linear-gradient(170deg, rgba(17,24,39,0.9) 0%, rgba(17,24,39,0.6) 50%, rgba(17,24,39,0.8) 100%)'
-          : 'linear-gradient(170deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.08) 100%)'
+          ? 'linear-gradient(165deg, rgba(17,24,39,0.95) 0%, rgba(138,21,56,0.05) 50%, rgba(17,24,39,0.9) 100%)'
+          : 'linear-gradient(165deg, rgba(255,255,255,0.9) 0%, rgba(138,21,56,0.03) 50%, rgba(255,255,255,0.85) 100%)'
       },
       visible ? { height: '100dvh' } : {}
     ]"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <!-- Sutil overlay blanco desvanecido (modo claro) -->
-    <div v-if="!isDark" class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.02) 100%); mix-blend-mode: overlay;"></div>
-    <!-- Header: Apple Brand Identity -->
+    <!-- Shine Effect -->
+    <div 
+      v-if="!isDark" 
+      class="absolute inset-0 pointer-events-none opacity-30"
+      style="background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(138,21,56,0.05) 100%);"
+    ></div>
+
+    <!-- Decorative Line -->
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8A1538]/30 to-transparent"></div>
+
+    <!-- Header -->
     <div
-      class="h-36 flex items-center shrink-0 overflow-hidden relative"
-      :class="isHovered || visible ? 'px-4' : 'justify-center'"
+      class="h-32 flex items-center shrink-0 overflow-hidden relative border-b border-white/20 dark:border-gray-700/30"
+      :class="isHovered || visible ? 'px-6' : 'justify-center'"
     >
       <div
-        class="flex items-center gap-3 transition-all duration-500"
+        class="flex items-center gap-4 transition-all duration-500"
         :class="isHovered || visible ? 'min-w-[280px]' : 'min-w-0'"
       >
+        <!-- Logo Container with Glow -->
         <div
-          class="w-20 h-20 flex items-center justify-center shrink-0 transition-all duration-1000 group-hover/sidebar:rotate-[360deg] group-hover/sidebar:scale-110"
+          class="relative w-16 h-16 flex items-center justify-center shrink-0 transition-all duration-700 group-hover/sidebar:scale-110"
         >
+          <div class="absolute inset-0 bg-gradient-to-br from-[#8A1538]/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500"></div>
           <img
             src="/public/img/jordan.png"
             alt="Jordan Logo"
-            class="w-18 h-18 object-contain"
+            class="w-14 h-14 object-contain relative z-10 drop-shadow-lg"
           />
         </div>
+
         <div
           class="flex flex-col transition-all duration-500"
           :class="
             isHovered || visible
               ? 'opacity-100 translate-x-0'
-              : 'opacity-0 -translate-x-10 pointer-events-none w-0 h-0 overflow-hidden'
+              : 'opacity-0 -translate-x-6 pointer-events-none w-0 h-0 overflow-hidden'
           "
         >
-          <span
-            class="text-3xl font-black tracking-tighter text-[#1D1D1F] dark:text-white leading-none whitespace-nowrap"
-            >SIG<span class="text-[#607C88]">IU</span></span
-          >
-          <span
-            class="text-[11px] font-bold text-[#86868B] dark:text-gray-400 uppercase tracking-[0.1em] mt-2 whitespace-nowrap"
-            >Sistema de Gestión
+          <span class="text-2xl font-black tracking-tight text-[#1D1D1F] dark:text-white leading-none whitespace-nowrap">
+            SIG<span class="text-[#8A1538]">IU</span>
           </span>
+          <span class="text-[10px] font-semibold text-[#8A1538] dark:text-[#D1A7B0] uppercase tracking-[0.15em] mt-1.5 whitespace-nowrap">
+            Sistema de Gestión
+          </span>
+          <span class="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5 tracking-wide">Incidencias Urbanas</span>
         </div>
       </div>
 
       <!-- Close button for mobile -->
       <Button
         v-if="visible"
-        class="lg:hidden absolute top-6 right-4 !p-0 !w-10 !h-10 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-white bg-[#F5F5F7] dark:bg-gray-800 rounded-xl border border-[#E8E8ED] dark:border-gray-700 transition-all"
+        class="lg:hidden absolute top-5 right-5 !p-0 !w-10 !h-10 text-gray-500 hover:text-[#8A1538] bg-white/80 dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all hover:scale-110"
         icon="pi pi-times"
         text
         rounded
@@ -83,70 +93,85 @@
       />
     </div>
 
-    <!-- Menú de Navegación Apple Minimal -->
-    <div class="flex-1 py-6 px-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
-      <nav class="space-y-10">
+    <!-- Menu Navigation -->
+    <div class="flex-1 py-6 px-3 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
+      <!-- Section Indicator -->
+      <div class="absolute left-0 top-6 bottom-6 w-0.5 bg-gradient-to-b from-transparent via-[#8A1538]/20 to-transparent opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500"></div>
+
+      <nav class="space-y-8">
         <div v-for="(item, index) in menuItems" :key="index">
-          <!-- iOS Style Header -->
+          <!-- Section Label -->
           <div
             v-if="item.label"
-            class="px-5 mb-4 text-[11px] font-red text-[#86868B]/50 dark:text-gray-500 uppercase tracking-[0.2em] transition-all duration-500"
-            :class="
-              isHovered || visible ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
-            "
+            class="px-4 mb-3 flex items-center gap-2"
+            :class="isHovered || visible ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'"
           >
-            {{ item.label }}
+            <div class="h-px flex-1 bg-gradient-to-r from-[#8A1538]/30 to-transparent"></div>
+            <span class="text-[10px] font-bold text-[#8A1538]/70 dark:text-[#D1A7B0]/70 uppercase tracking-[0.2em]">
+              {{ item.label }}
+            </span>
+            <div class="h-px flex-1 bg-gradient-to-l from-[#8A1538]/30 to-transparent"></div>
           </div>
 
-          <!-- Items del Menú -->
-          <div class="space-y-2">
+          <!-- Menu Items -->
+          <div class="space-y-1.5 px-2">
             <Link
               v-for="subItem in item.items"
               :key="subItem.label"
               :href="subItem.url || '#'"
-              class="flex items-center h-12 px-2 rounded-[1rem] transition-all duration-500 group/item relative overflow-hidden"
-              :class="
+              class="flex items-center h-12 px-4 rounded-2xl transition-all duration-300 group/item relative overflow-hidden"
+              :class="[
                 $page.url === subItem.url
-                  ? 'bg-[#850D12] text-white shadow-lg shadow-[#F04A4B]/20'
-                  : 'text-[#1D1D1F] dark:text-gray-300 hover:bg-[#E0DCDC] dark:hover:bg-gray-800 hover:text-[#000000] dark:hover:text-white'
-              "
+                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a01a45] text-white shadow-lg shadow-[#8A1538]/25'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-md'
+              ]"
             >
-              <!-- Icono con Animación Elastic Pop Centrado -->
-              <div class="w-10 flex justify-center items-center shrink-0">
+              <!-- Active Indicator Line -->
+              <div 
+                v-if="$page.url === subItem.url"
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+              ></div>
+
+              <!-- Icon Container (moved more left) -->
+              <div class="w-8 flex items-center justify-start pl-0 -ml-2 shrink-0 relative">
+                <div 
+                  v-if="$page.url === subItem.url"
+                  class="absolute inset-0 bg-white/20 rounded-lg blur-md"
+                ></div>
                 <i
                   :class="[
                     subItem.icon,
-                    'text-xl transition-all duration-500 cubic-bezier-elastic group-hover/item:scale-135 group-hover/item:rotate-[12deg]',
+                    'text-lg transition-all duration-300 relative z-10',
                     $page.url === subItem.url
-                      ? 'text-[#FFFFFF]'
-                      : 'group-hover/item:text-[#000000]',
+                      ? 'text-white scale-110'
+                      : 'text-gray-500 dark:text-gray-400 group-hover/item:text-[#8A1538] group-hover/item:scale-110',
                   ]"
                 ></i>
               </div>
 
-              <!-- Texto más balanceado -->
+              <!-- Label -->
               <span
-                class="ml-4 font-bold text-[13px] tracking-tight whitespace-nowrap transition-all duration-500"
-                :class="
-                  isHovered || visible
-                    ? 'opacity-100 translate-x-0'
-                    : 'opacity-0 -translate-x-8 pointer-events-none'
-                "
+                class="ml-2 font-semibold text-[13px] tracking-tight whitespace-nowrap transition-all duration-400"
+                :class="[
+                  isHovered || visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none absolute',
+                  $page.url === subItem.url ? 'text-white' : 'text-gray-700 dark:text-gray-200'
+                ]"
               >
                 {{ subItem.label }}
               </span>
 
-              <!-- Active state indicator bar -->
+              <!-- Active Dot -->
               <div
                 v-if="$page.url === subItem.url && (isHovered || visible)"
-                class="absolute right-4 w-1.5 h-1.5 bg-[#FFFFFF] rounded-full shadow-[0_0_8px_#607C88]"
+                class="absolute right-3 w-2 h-2 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)] animate-pulse"
               ></div>
 
-              <!-- Tooltip Minimalista (Negro Premium) -->
+              <!-- Tooltip (Collapsed State) -->
               <div
                 v-if="!isHovered && !visible"
-                class="absolute left-20 bg-[#850D12] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 translate-x-4 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap z-50 shadow-2xl"
+                class="absolute left-10 bg-[#8A1538] text-white text-[11px] font-bold px-3 py-2 rounded-xl opacity-0 translate-x-2 scale-95 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:scale-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-50 shadow-2xl shadow-[#8A1538]/30"
               >
+                <div class="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#8A1538] rotate-45"></div>
                 {{ subItem.label }}
               </div>
             </Link>
@@ -155,33 +180,39 @@
       </nav>
     </div>
 
-    <!-- Footer: Perfil Control Center -->
-    <div class="p-4 mt-auto">
+    <!-- Footer: User Profile -->
+    <div class="p-4 mt-auto relative">
+      <!-- Top Border -->
+      <div class="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-gray-300/50 dark:via-gray-600/50 to-transparent"></div>
+
       <div
-        class="flex items-center bg-white/10 backdrop-blur-xl backdrop-saturate-[180%] rounded-[1.8rem] border border-white/30 transition-all duration-500 hover:shadow-lg hover:bg-white/20 group/user"
-        :class="isHovered || visible ? 'p-3' : 'p-2 justify-center'"
+        class="flex items-center bg-gradient-to-br from-white/90 to-white/50 dark:from-gray-800/90 dark:to-gray-800/50 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-gray-700/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#8A1538]/10 hover:border-[#8A1538]/30 group/user overflow-hidden relative"
+        :class="isHovered || visible ? 'p-3 gap-3' : 'p-2 justify-center'"
       >
+        <!-- User Glow -->
+        <div class="absolute inset-0 bg-gradient-to-r from-[#8A1538]/5 to-transparent opacity-0 group-hover/user:opacity-100 transition-opacity duration-500"></div>
+
         <div class="relative shrink-0">
+          <div class="absolute inset-0 bg-[#8A1538] rounded-full blur-lg opacity-20 group-hover/user:opacity-40 transition-opacity"></div>
           <Avatar
             :label="displayInitial"
             shape="circle"
-            class="!bg-[#1D1D1F] !text-white !font-bold !w-10 !h-10 shadow-sm transition-transform duration-500 group-hover/user:scale-105"
+            class="!bg-gradient-to-br !from-[#8A1538] !to-[#a01a45] !text-white !font-bold !w-11 !h-11 shadow-lg shadow-[#8A1538]/30 relative z-10 transition-transform duration-300 group-hover/user:scale-105"
           />
-          <div
-            class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white/20 rounded-full"
-          ></div>
+          <!-- Online Status -->
+          <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full shadow-sm z-20">
+            <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75"></div>
+          </div>
         </div>
 
         <div
-          class="ml-3 flex-1 overflow-hidden transition-all duration-500"
+          class="flex-1 overflow-hidden transition-all duration-500 relative z-10"
           :class="isHovered || visible ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'"
         >
-          <h4 class="text-sm font-bold text-[#1D1D1F] dark:text-white truncate tracking-tight">
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate">
             {{ displayUser.name }}
           </h4>
-          <p
-            class="text-[10px] text-[#86868B] dark:text-gray-400 font-bold uppercase tracking-tight truncate"
-          >
+          <p class="text-[10px] text-[#8A1538] dark:text-[#D1A7B0] font-semibold uppercase tracking-wide truncate">
             {{ displayUser.rol }}
           </p>
         </div>
@@ -192,7 +223,7 @@
           text
           rounded
           :loading="isLoggingOut"
-          class="!text-[#86868B] hover:!text-red-500 hover:!bg-red-50 !w-10 !h-10 transition-all duration-300"
+          class="!text-gray-400 hover:!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-900/20 !w-9 !h-9 transition-all duration-300 hover:scale-110 relative z-10"
           @click="logout"
         />
       </div>
@@ -262,33 +293,50 @@ onBeforeUnmount(() => setBodyLock(false));
 </script>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.cubic-bezier-elastic {
-  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
-}
-
+/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 0px;
+  width: 4px;
 }
-.custom-scrollbar:hover::-webkit-scrollbar {
-  width: 3px;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e8e8ed;
+  background: linear-gradient(180deg, #8A1538, #D1A7B0);
   border-radius: 10px;
+  opacity: 0.5;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  opacity: 1;
+}
+
+/* Active Item Glow */
+@keyframes activeGlow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(138, 21, 56, 0.25); }
+  50% { box-shadow: 0 4px 30px rgba(138, 21, 56, 0.4); }
+}
+
+:deep(.bg-gradient-to-r.from-\[\#8A1538\]) {
+  animation: activeGlow 3s ease-in-out infinite;
+}
+
+/* Tooltip Arrow Animation */
+.group-hover\/item\:translate-x-0 {
+  transform: translateX(0);
+}
+
+/* Duration utilities */
+.duration-400 {
+  transition-duration: 400ms;
+}
+
+/* Elastic easing */
+.ease-\[cubic-bezier\(0\.23\2c 1\2c 0\.32\2c 1\)\] {
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 </style>
