@@ -1,294 +1,722 @@
 <template>
-  <div class="animate-fade-in py-6 pl-4 pr-6 flex flex-col h-full">
-    <PageHeader
-      title="Mapa de Incidencias"
-      subtitle="Visualiza zonas críticas, densidad de reportes y el estatus de cada incidencia."
-    />
+	<div class="animate-fade-in py-6 pl-4 pr-6">
+		<PageHeader
+			title="Mapa de Incidencias"
+			subtitle="Marcadores con íconos por estatus, efecto pulse, filtro rápido y vista inicial."
+		>
+			<template #actions>
+				<div class="flex flex-wrap items-center gap-2">
+					<button
+						@click="encuadrarIncidencias"
+						class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-app-border bg-white text-[#1D1D1F] text-sm font-bold hover:bg-app-secondary transition shadow-sm dark:bg-app-card dark:border-app-border dark:text-white dark:hover:bg-app-secondary"
+					><i class="pi pi-map"></i> Ver incidencias</button>
+				</div>
+			</template>
+		</PageHeader>
 
-    <!-- KPIs rápidos -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-      <div v-for="s in stats" :key="s.label"
-        :class="['rounded-2xl px-4 py-3 flex items-center gap-3 border cursor-pointer transition-all', s.active ? s.activeClass : 'bg-white border-[#E8E8ED] hover:shadow-sm']"
-        @click="toggleFiltro(s.key)"
-      >
-        <div :class="['w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0', s.iconBg]">
-          <i :class="s.icon"></i>
-        </div>
-        <div>
-          <p class="text-xl font-black text-[#1D1D1F] leading-none">{{ s.count }}</p>
-          <p class="text-[10px] font-bold text-[#86868B] uppercase tracking-wide mt-0.5">{{ s.label }}</p>
-        </div>
-      </div>
-    </div>
+		<div class="grid grid-cols-1 2xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-4">
+			<div class="bg-white border border-app-border rounded-3xl shadow-sm p-4 md:p-5 dark:bg-app-card dark:border-app-border">
+				<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+					<div>
+						<p class="text-sm font-bold text-[#1D1D1F] dark:text-white">Cobertura del mapa</p>
+						<p class="text-xs text-[#86868B] mt-0.5 dark:text-[#A1A1A6]">
+							{{ filteredIncidenciasConCoordenadas.length }} visibles de {{ incidenciasConCoordenadas.length }} con coordenadas válidas.
+						</p>
+					</div>
 
-    <!-- Toolbar -->
-    <div class="flex flex-wrap items-center gap-3 mb-4">
-      <!-- Toggle mapa/satélite -->
-      <div class="flex rounded-xl overflow-hidden border border-[#E8E8ED] bg-white">
-        <button
-          v-for="t in ['roadmap','satellite']" :key="t"
-          @click="setMapType(t)"
-          :class="['px-3 py-2 text-xs font-bold transition', mapType === t ? 'bg-[#1D1D1F] text-white' : 'text-[#86868B] hover:bg-gray-50']"
-        >{{ t === 'roadmap' ? 'Mapa' : 'Satélite' }}</button>
-      </div>
+					<div class="flex flex-wrap items-center gap-2">
+						<span class="map-live-badge">
+							<span class="map-live-dot"></span>
+							{{ activeFilterLabel }}
+						</span>
+						<span class="px-3 py-1.5 rounded-full bg-app-secondary border border-app-border text-xs font-semibold text-[#4A4A4D] dark:bg-app-secondary dark:border-app-border dark:text-white/80">
+							{{ incidenciaActiva ? `Seleccionada #${incidenciaActiva.id}` : 'Sin selección' }}
+						</span>
+					</div>
+				</div>
 
-      <!-- Toggle capa calor -->
-      <button
-        @click="toggleHeatmap"
-        :class="['flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition', heatmapOn ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-[#86868B] border-[#E8E8ED] hover:bg-gray-50']"
-      ><i class="pi pi-map"></i> Mapa de calor</button>
+				<MapControlsBar
+					v-model:selected-status-filter="selectedStatusFilter"
+					:can-navigate-filtered="canNavigateFiltered"
+					:leyenda-estatus="leyendaEstatus"
+					:status-filter-options="statusFilterOptions"
+					:active-filter-label="activeFilterLabel"
+					:is-heatmap-active="isHeatmapActive"
+					class="mb-4"
+					@prev="prevFilteredIncidencia"
+					@next="nextFilteredIncidencia"
+					@toggle-heatmap="toggleHeatmap"
+				/>
 
-      <!-- Toggle marcadores -->
-      <button
-        @click="markersOn = !markersOn; renderMarkers()"
-        :class="['flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition', markersOn ? 'bg-[#1D1D1F] text-white border-[#1D1D1F]' : 'bg-white text-[#86868B] border-[#E8E8ED] hover:bg-gray-50']"
-      ><i class="pi pi-map-marker"></i> Marcadores</button>
+				<!-- Contenedor del mapa -->
+				<div class="relative overflow-hidden rounded-3xl border border-app-border bg-app-secondary h-[68vh] min-h-[520px] dark:border-app-border dark:bg-app-secondary">
+					
+					<!-- Botón Mi Ubicación (Flotante dentro del mapa) -->
+					<div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
+						<button
+							@click="verMiUbicacion(map)"
+							:disabled="locationLoading || !mapsReady"
+							class="flex items-center justify-center gap-2 px-4 py-3 min-w-[140px] rounded-xl bg-white/95 backdrop-blur-md text-[#1D1D1F] text-[13px] font-extrabold hover:bg-white border border-app-border transition-all shadow-md disabled:opacity-60 dark:bg-app-card/95 dark:border-app-border dark:text-white dark:hover:bg-app-secondary"
+							title="Ir a mi ubicación"
+						>
+							<i :class="locationLoading ? 'pi pi-spin pi-spinner text-brand-red' : 'pi pi-compass text-brand-red'"></i> 
+							{{ locationLoading ? 'Buscando...' : 'Mi ubicación' }}
+						</button>
+					</div>
 
-      <span class="text-xs text-[#86868B] ml-auto">
-        {{ filtroActivo ? `Filtrando: ${filtroActivo}` : 'Todas las incidencias' }}
-        <button v-if="filtroActivo" @click="filtroActivo = null; renderMarkers()" class="ml-1 text-rose-500 hover:underline">✕ limpiar</button>
-      </span>
-    </div>
+					<div ref="mapContainer" class="h-full w-full"></div>
 
-    <!-- Mapa -->
-    <div class="relative flex-1 min-h-[520px] rounded-2xl overflow-hidden border border-[#E8E8ED] shadow-sm">
-      <div ref="mapEl" class="w-full h-full min-h-[520px]"></div>
+					<div
+						v-if="loadingMap"
+						class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-10 dark:bg-[#1C1C1E]/80"
+					>
+						<div class="w-12 h-12 rounded-full border-4 border-[#E8E8ED] border-t-[#1D1D1F] animate-spin dark:border-white/10 dark:border-t-white"></div>
+						<p class="text-sm font-semibold text-[#1D1D1F] dark:text-white">Cargando Google Maps...</p>
+					</div>
 
-      <!-- Leyenda -->
-      <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl border border-[#E8E8ED] shadow-sm px-4 py-3 flex flex-col gap-1.5">
-        <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest mb-1">Leyenda</p>
-        <div v-for="l in leyenda" :key="l.label" class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full shrink-0" :style="{ background: l.color }"></span>
-          <span class="text-xs text-[#1D1D1F] capitalize">{{ l.label }}</span>
-        </div>
-      </div>
+					<div
+						v-else-if="mapError"
+						class="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 z-10 px-6 text-center dark:bg-[#1C1C1E]"
+					>
+						<div class="w-16 h-16 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center dark:bg-rose-500/20 dark:text-rose-400">
+							<i class="pi pi-map text-3xl"></i>
+						</div>
+						<div>
+							<p class="text-base font-bold text-[#1D1D1F] dark:text-white">No se pudo cargar el mapa</p>
+							<p class="text-sm text-[#86868B] mt-1 dark:text-[#A1A1A6]">{{ mapError }}</p>
+						</div>
+					</div>
 
-      <!-- Cargando -->
-      <div v-if="!mapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-        <div class="flex flex-col items-center gap-3">
-          <div class="w-10 h-10 border-4 border-[#1D1D1F] border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-sm text-[#86868B]">Cargando mapa…</p>
-        </div>
-      </div>
-    </div>
+					<div
+						v-if="locationError"
+						class="absolute right-4 bottom-4 z-10 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 px-4 py-3 text-sm font-medium shadow-sm"
+					>
+						<i class="pi pi-exclamation-triangle mr-2"></i>{{ locationError }}
+					</div>
 
-    <!-- Panel detalle incidencia seleccionada -->
-    <transition name="slide-up">
-      <div v-if="selected" class="mt-4 bg-white rounded-2xl border border-[#E8E8ED] shadow-sm p-5 flex flex-col sm:flex-row gap-4">
-        <div class="h-32 w-full sm:w-40 rounded-xl overflow-hidden bg-[#F5F5F7] shrink-0">
-          <img v-if="selected.foto" :src="`/storage/${selected.foto}`" class="w-full h-full object-cover" />
-          <div v-else class="h-full flex items-center justify-center"><i class="pi pi-image text-3xl text-gray-300"></i></div>
-        </div>
-        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span :class="['text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide', badgeClass(selected.estatus)]">{{ selected.estatus }}</span>
-            <span class="text-[10px] text-[#86868B] font-mono">#{{ selected.id }}</span>
-          </div>
-          <p class="text-sm font-black text-[#1D1D1F] uppercase tracking-wide">{{ selected.tipo_incidencia }}</p>
-          <p class="text-sm text-[#1D1D1F] font-semibold">{{ selected.direccion }}</p>
-          <p class="text-xs text-[#86868B] line-clamp-2">{{ selected.descripcion }}</p>
-          <p class="text-[10px] text-[#86868B]">Ciudadano: {{ selected.nombre_ciudadano }} · {{ selected.created_at }}</p>
-        </div>
-        <button @click="selected = null" class="self-start text-gray-400 hover:text-gray-600 transition shrink-0">
-          <i class="pi pi-times text-lg"></i>
-        </button>
-      </div>
-    </transition>
-  </div>
+					<!-- Botón flotante para ver la incidencia seleccionada (Útil cuando están amontonadas) -->
+					<div 
+						v-if="incidenciaActiva" 
+						class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 animate-scale-in"
+					>
+						<button
+							@click="modalVisible = true"
+							class="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-brand-red text-white shadow-[0_20px_50px_rgba(138,21,56,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 font-bold text-sm"
+						>
+							<i class="pi pi-eye text-lg"></i>
+							<span>Ver incidencia #{{ incidenciaActiva.id }}</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<MapIncidenciaList
+				:incidencias="filteredIncidenciasConCoordenadas"
+				:activa="incidenciaActiva"
+				:can-navigate="canNavigateFiltered"
+				:counter-label="filteredCounterLabel"
+				@enfocar="enfocarIncidencia"
+				@prev="prevFilteredIncidencia"
+				@next="nextFilteredIncidencia"
+			/>
+		</div>
+
+		<MapIncidenciaModal
+			v-model:visible="modalVisible"
+			:inc="incidenciaActiva"
+			:distancia="distanciaSeleccionada"
+			@hide="limpiarSeleccionVisual"
+			@enfocar="enfocarIncidencia"
+			@ver-ubicacion="verMiUbicacion(map)"
+		/>
+	</div>
 </template>
 
 <script>
-const COLORES = {
-  'pendiente':   '#6B7280',
-  'en proceso':  '#0EA5E9',
-  'en revisión': '#F59E0B',
-  'resuelto':    '#10B981',
-  'rechazado':   '#EF4444',
-}
+import { markRaw } from 'vue'
+import MapControlsBar from '@/Components/MapControlsBar.vue'
+import MapIncidenciaModal from '@/Components/MapIncidenciaModal.vue'
+import MapIncidenciaList from '@/Components/MapIncidenciaList.vue'
+import { useUserLocation } from '@/composables/useUserLocation.js'
+import {
+	loadGoogleMapsApi,
+	createPulseOverlayClass,
+	construirIconoMarker,
+	tieneCoordenadas,
+	statusType,
+	statusColor,
+	calcularDistanciaKm,
+	DEFAULT_CENTER,
+} from '@/utils/mapUtils.js'
 
 export default {
-  props: {
-    incidencias: { type: Array, default: () => [] },
-    apiKey:      { type: String, default: '' },
-  },
+	components: { MapControlsBar, MapIncidenciaModal, MapIncidenciaList },
+	props: {
+		incidencias: { type: Array, default: () => [] },
+	},
 
-  data() {
-    return {
-      mapReady:    false,
-      mapType:     'roadmap',
-      heatmapOn:   true,
-      markersOn:   true,
-      filtroActivo: null,
-      selected:    null,
-      // Google Maps instances
-      gmap:        null,
-      heatmapLayer: null,
-      gmarkers:    [],
-      leyenda: Object.entries(COLORES).map(([label, color]) => ({ label, color })),
-    }
-  },
+	setup() {
+		const {
+			userPosition,
+			locationLoading,
+			locationError,
+			verMiUbicacion,
+			limpiarUbicacion,
+		} = useUserLocation()
 
-  computed: {
-    stats() {
-      const keys = ['pendiente', 'en proceso', 'en revisión', 'resuelto', 'rechazado']
-      const cfg = {
-        'pendiente':   { icon: 'pi pi-clock',         iconBg: 'bg-gray-100 text-gray-500',    activeClass: 'bg-gray-600 border-gray-600 text-white' },
-        'en proceso':  { icon: 'pi pi-spinner',        iconBg: 'bg-sky-100 text-sky-500',      activeClass: 'bg-sky-500 border-sky-500 text-white' },
-        'en revisión': { icon: 'pi pi-eye',            iconBg: 'bg-amber-100 text-amber-500',  activeClass: 'bg-amber-500 border-amber-500 text-white' },
-        'resuelto':    { icon: 'pi pi-check-circle',   iconBg: 'bg-emerald-100 text-emerald-600', activeClass: 'bg-emerald-500 border-emerald-500 text-white' },
-        'rechazado':   { icon: 'pi pi-times-circle',   iconBg: 'bg-rose-100 text-rose-500',    activeClass: 'bg-rose-500 border-rose-500 text-white' },
-      }
-      return keys.map(k => ({
-        key: k,
-        label: k,
-        count: this.incidencias.filter(i => i.estatus === k).length,
-        active: this.filtroActivo === k,
-        ...cfg[k],
-      }))
-    },
+		return { userPosition, locationLoading, locationError, verMiUbicacion, limpiarUbicacion }
+	},
 
-    filtradas() {
-      if (!this.filtroActivo) return this.incidencias
-      return this.incidencias.filter(i => i.estatus === this.filtroActivo)
-    },
-  },
+	data() {
+		return {
+			localIncidencias: [...(this.incidencias || [])],
+			map: null,
+			loadingMap: true,
+			mapsReady: false,
+			mapError: '',
+			markers: [],
+			markerIndex: {},
+			pulseOverlays: [],
+			PulseOverlayClass: null,
+			activeMarker: null,
+			modalVisible: false,
+			incidenciaActiva: null,
+			selectedStatusFilter: 'all',
+			filteredIndex: -1,
+			isHeatmapActive: false,
+			heatmapLayer: null,
+			isDarkMode: false,
+		}
+	},
 
-  mounted() {
-    this.loadGoogleMaps()
-  },
+	computed: {
+		incidenciasConCoordenadas() {
+			return this.localIncidencias.filter(inc => tieneCoordenadas(inc))
+		},
 
-  beforeUnmount() {
-    // Limpiar listeners
-    this.gmarkers.forEach(m => m.setMap(null))
-  },
+		filteredIncidenciasConCoordenadas() {
+			if (this.selectedStatusFilter === 'all') return this.incidenciasConCoordenadas
+			return this.incidenciasConCoordenadas.filter(inc => statusType(inc.estatus) === this.selectedStatusFilter)
+		},
 
-  methods: {
-    loadGoogleMaps() {
-      if (window.google?.maps) { this.initMap(); return }
-      window.initMap = () => this.initMap()
-      const s = document.createElement('script')
-      s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCchiqlRlOnv6C4pXxh59tYDMRiK501Tmc&libraries=visualization,places&callback=initMap`
-      s.async = true; s.defer = true
-      document.head.appendChild(s)
-    },
+		distanciaSeleccionada() {
+			if (!this.userPosition || !this.incidenciaActiva || !tieneCoordenadas(this.incidenciaActiva)) return ''
 
-    initMap() {
-      // Centro default: México
-      let center = { lat: 23.6345, lng: -102.5528 }
+			const km = calcularDistanciaKm(
+				this.userPosition.lat,
+				this.userPosition.lng,
+				Number(this.incidenciaActiva.latitud),
+				Number(this.incidenciaActiva.longitud),
+			)
 
-      // Auto-centrar en las incidencias con coords
-      const conCoords = this.incidencias.filter(i => i.latitud && i.longitud)
-      if (conCoords.length) {
-        const avgLat = conCoords.reduce((s, i) => s + parseFloat(i.latitud), 0) / conCoords.length
-        const avgLng = conCoords.reduce((s, i) => s + parseFloat(i.longitud), 0) / conCoords.length
-        center = { lat: avgLat, lng: avgLng }
-      }
+			if (km < 1) return `${Math.round(km * 1000)} m`
+			return `${km.toFixed(1)} km`
+		},
 
-      this.gmap = new window.google.maps.Map(this.$refs.mapEl, {
-        center,
-        zoom: conCoords.length ? 13 : 5,
-        mapTypeId: this.mapType,
-        styles: [
-          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-        ],
-        mapTypeControl: false,
-        fullscreenControl: true,
-        streetViewControl: false,
-      })
+		leyendaEstatus() {
+			return [
+				{ label: 'Pendiente', value: 'pending' },
+				{ label: 'En proceso', value: 'inprogress' },
+				{ label: 'En revisión', value: 'inprogress' },
+				{ label: 'Resuelto', value: 'resolved' },
+				{ label: 'Rechazado', value: 'rejected' },
+			]
+		},
 
-      // Capa de calor
-      const heatPoints = conCoords.map(i => ({
-        location: new window.google.maps.LatLng(parseFloat(i.latitud), parseFloat(i.longitud)),
-        weight: i.estatus === 'pendiente' ? 3 : i.estatus === 'en proceso' ? 2 : 1,
-      }))
+		statusFilterOptions() {
+			return [
+				{ label: 'Todos', value: 'all' },
+				{ label: 'Pendientes', value: 'pending' },
+				{ label: 'En proceso / revisión', value: 'inprogress' },
+				{ label: 'Resueltos', value: 'resolved' },
+				{ label: 'Rechazados', value: 'rejected' },
+			]
+		},
 
-      this.heatmapLayer = new window.google.maps.visualization.HeatmapLayer({
-        data: heatPoints,
-        map: this.gmap,
-        radius: 40,
-        opacity: 0.75,
-        gradient: [
-          'rgba(0,0,0,0)',
-          'rgba(16,185,129,0.6)',
-          'rgba(245,158,11,0.8)',
-          'rgba(239,68,68,1)',
-        ],
-      })
+		activeFilterLabel() {
+			const selected = this.statusFilterOptions.find(option => option.value === this.selectedStatusFilter)
+			return selected ? `Filtro: ${selected.label}` : 'Filtro: Todos'
+		},
 
-      this.mapReady = true
-      this.renderMarkers()
-    },
+		canNavigateFiltered() {
+			return this.selectedStatusFilter !== 'all' && this.filteredIncidenciasConCoordenadas.length > 0
+		},
 
-    renderMarkers() {
-      // Limpiar marcadores anteriores
-      this.gmarkers.forEach(m => m.setMap(null))
-      this.gmarkers = []
+		filteredCounterLabel() {
+			if (!this.canNavigateFiltered) return 'Activa un filtro específico para navegar.'
+			return `${this.filteredIndex >= 0 ? this.filteredIndex + 1 : 0}/${this.filteredIncidenciasConCoordenadas.length}`
+		},
+	},
 
-      if (!this.markersOn || !this.gmap) return
+	watch: {
+		incidencias: {
+			deep: true,
+			handler(newValue) {
+				this.localIncidencias = [...(newValue || [])]
+				this.updateFilteredIndex(true)
+				if (this.mapsReady) this.renderMarkers()
+			},
+		},
 
-      this.filtradas.forEach(inc => {
-        if (!inc.latitud || !inc.longitud) return
-        const color = COLORES[inc.estatus] || '#6B7280'
+		selectedStatusFilter() {
+			this.updateFilteredIndex(true)
+			if (this.mapsReady) {
+				this.renderMarkers(false)
+				
+				// Efecto "Va hacia allá" suave enfocando el primer elemento resultante del filtro
+				if (this.filteredIncidenciasConCoordenadas.length > 0) {
+					const primerIncidencia = this.filteredIncidenciasConCoordenadas[0]
+					this.centrarEnIncidencia(primerIncidencia)
+				}
+			}
+		},
+	},
 
-        const marker = new window.google.maps.Marker({
-          position: { lat: parseFloat(inc.latitud), lng: parseFloat(inc.longitud) },
-          map: this.gmap,
-          title: `#${inc.id} ${inc.tipo_incidencia}`,
-          icon: {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 9,
-            fillColor: color,
-            fillOpacity: 0.95,
-            strokeColor: '#ffffff',
-            strokeWeight: 2,
-          },
-        })
+	mounted() {
+		this.isDarkMode = document.documentElement.classList.contains('dark')
+		this.darkModeObserver = new MutationObserver((mutations) => {
+			for (let m of mutations) {
+				if (m.attributeName === 'class') {
+					const isDark = document.documentElement.classList.contains('dark')
+					if (this.isDarkMode !== isDark) {
+						this.isDarkMode = isDark
+						this.updateMapStyle()
+					}
+				}
+			}
+		})
+		this.darkModeObserver.observe(document.documentElement, { attributes: true })
 
-        marker.addListener('click', () => {
-          this.selected = inc
-          this.gmap.panTo(marker.getPosition())
-        })
+		this.updateFilteredIndex(true)
+		this.inicializarMapa()
+	},
 
-        this.gmarkers.push(marker)
-      })
-    },
+	beforeUnmount() {
+		if (this.darkModeObserver) this.darkModeObserver.disconnect()
+		this.limpiarMapa()
+	},
 
-    toggleHeatmap() {
-      this.heatmapOn = !this.heatmapOn
-      if (this.heatmapLayer) {
-        this.heatmapLayer.setMap(this.heatmapOn ? this.gmap : null)
-      }
-    },
+	methods: {
+		// ─── Mapa ──────────────────────────────────────────────
+		async inicializarMapa() {
+			this.loadingMap = true
+			this.mapError = ''
 
-    setMapType(type) {
-      this.mapType = type
-      if (this.gmap) this.gmap.setMapTypeId(type)
-    },
+			try {
+				await loadGoogleMapsApi()
+				this.PulseOverlayClass = createPulseOverlayClass()
 
-    toggleFiltro(key) {
-      this.filtroActivo = this.filtroActivo === key ? null : key
-      this.renderMarkers()
-    },
+				this.map = markRaw(new window.google.maps.Map(this.$refs.mapContainer, {
+					center: DEFAULT_CENTER,
+					zoom: 13,
+					mapTypeControl: false,
+					streetViewControl: false,
+					fullscreenControl: true,
+					clickableIcons: false,
+					gestureHandling: 'cooperative',
+					styles: this.isDarkMode ? this.getMapDarkStyle() : [],
+				}))
 
-    badgeClass(estatus) {
-      const m = {
-        'pendiente':   'bg-gray-100 text-gray-600',
-        'en proceso':  'bg-sky-100 text-sky-700',
-        'en revisión': 'bg-amber-100 text-amber-700',
-        'resuelto':    'bg-emerald-100 text-emerald-700',
-        'rechazado':   'bg-rose-100 text-rose-700',
-      }
-      return m[estatus] || 'bg-gray-100 text-gray-600'
-    },
-  },
+				this.mapsReady = true
+				this.renderMarkers(false)
+			} catch (error) {
+				this.mapError = error?.message || 'Ocurrió un error al inicializar Google Maps.'
+			} finally {
+				this.loadingMap = false
+			}
+		},
+
+		limpiarMapa() {
+			this.limpiarMarkers()
+			this.limpiarUbicacion()
+			this.activeMarker = null
+		},
+
+		updateMapStyle() {
+			if (!this.map) return
+			this.map.setOptions({ styles: this.isDarkMode ? this.getMapDarkStyle() : [] })
+		},
+
+		getMapDarkStyle() {
+			return [
+				{ elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+				{ elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+				{ elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+				{ featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+				{ featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+				{ featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
+				{ featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#6b9a76" }] },
+				{ featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+				{ featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+				{ featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+				{ featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#746855" }] },
+				{ featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1f2835" }] },
+				{ featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#f3d19c" }] },
+				{ featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
+				{ featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+				{ featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
+				{ featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
+				{ featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#17263c" }] }
+			]
+		},
+
+		limpiarMarkers() {
+			this.markers.forEach(marker => marker.setMap(null))
+			this.pulseOverlays.forEach(pulse => pulse.setMap(null))
+			if (this.heatmapLayer) this.heatmapLayer.setMap(null)
+			this.markers = []
+			this.pulseOverlays = []
+			this.markerIndex = {}
+		},
+
+		// ─── Marcadores ────────────────────────────────────────
+		renderMarkers(fitView = true) {
+			if (!this.map || !window.google?.maps) return
+
+			this.limpiarMarkers()
+			const incidencias = this.filteredIncidenciasConCoordenadas
+
+			if (!incidencias.length) {
+				if (fitView) {
+					this.map.setCenter(DEFAULT_CENTER)
+					this.map.setZoom(13)
+				}
+				return
+			}
+
+			const bounds = new window.google.maps.LatLngBounds()
+
+			// Preparar datos para Heatmap
+			const heatmapData = []
+
+			incidencias.forEach(inc => {
+				const position = {
+					lat: Number(inc.latitud),
+					lng: Number(inc.longitud),
+				}
+				const latLng = new window.google.maps.LatLng(position.lat, position.lng)
+				bounds.extend(position)
+				heatmapData.push(latLng)
+
+				if (!this.isHeatmapActive) {
+					const marker = markRaw(new window.google.maps.Marker({
+						map: this.map,
+						position,
+						title: `${inc.tipo_incidencia || 'Incidencia'} #${inc.id}`,
+						icon: construirIconoMarker(inc),
+						zIndex: 20,
+					}))
+
+					marker.addListener('click', () => this.abrirIncidencia(inc, marker))
+
+					const pulse = markRaw(new this.PulseOverlayClass(
+						latLng,
+						statusColor(statusType(inc.estatus)),
+					))
+					pulse.setMap(this.map)
+
+					this.markers.push(marker)
+					this.pulseOverlays.push(pulse)
+					this.markerIndex[inc.id] = marker
+				}
+			})
+
+			// Renderizar HeatmapLayer si está activo
+			if (this.isHeatmapActive) {
+				const gradientOptions = [
+					'rgba(0, 255, 255, 0)',
+					'rgba(0, 255, 255, 1)',
+					'rgba(0, 191, 255, 1)',
+					'rgba(0, 127, 255, 1)',
+					'rgba(0, 63, 255, 1)',
+					'rgba(0, 0, 255, 1)',
+					'rgba(0, 0, 223, 1)',
+					'rgba(0, 0, 191, 1)',
+					'rgba(0, 0, 159, 1)',
+					'rgba(0, 0, 127, 1)',
+					'rgba(63, 0, 91, 1)',
+					'rgba(127, 0, 63, 1)',
+					'rgba(191, 0, 31, 1)',
+					'rgba(255, 0, 0, 1)'
+				]
+				this.heatmapLayer = markRaw(new window.google.maps.visualization.HeatmapLayer({
+					data: heatmapData,
+					radius: 25,
+					opacity: 0.85,
+					gradient: gradientOptions,
+				}))
+				this.heatmapLayer.setMap(this.map)
+			}
+
+			// Solo ajustar la vista si se pidió explícitamente
+			if (!fitView) return
+
+			if (incidencias.length === 1) {
+				this.map.setCenter(bounds.getCenter())
+				this.map.setZoom(16)
+				return
+			}
+
+			this.map.fitBounds(bounds, 70)
+		},
+
+		encuadrarIncidencias() {
+			if (!this.mapsReady) return
+			this.renderMarkers(true)
+		},
+
+		toggleHeatmap() {
+			this.isHeatmapActive = !this.isHeatmapActive
+			this.renderMarkers(false)
+		},
+
+		// ─── Interacción ───────────────────────────────────────
+
+		/** Clic directo en el marcador del mapa → abre modal */
+		abrirIncidencia(inc, marker) {
+			if (this.activeMarker && this.activeMarker !== marker) this.activeMarker.setAnimation(null)
+
+			this.activeMarker = marker
+			this.incidenciaActiva = { ...inc }
+			this.modalVisible = true
+
+			marker.setAnimation(window.google.maps.Animation.BOUNCE)
+			window.setTimeout(() => marker.setAnimation(null), 1400)
+
+			this.map.panTo({ lat: Number(inc.latitud), lng: Number(inc.longitud) })
+			if ((this.map.getZoom() || 0) < 16) this.map.setZoom(16)
+		},
+
+		/** Solo centra + bounce, SIN abrir modal (flechitas y lista) */
+		centrarEnIncidencia(inc) {
+			const marker = this.markerIndex[inc.id]
+			if (!marker) return
+
+			if (this.activeMarker && this.activeMarker !== marker) this.activeMarker.setAnimation(null)
+
+			this.activeMarker = marker
+			this.incidenciaActiva = { ...inc }
+
+			marker.setAnimation(window.google.maps.Animation.BOUNCE)
+			window.setTimeout(() => marker.setAnimation(null), 1400)
+
+			this.map.panTo({ lat: Number(inc.latitud), lng: Number(inc.longitud) })
+			if ((this.map.getZoom() || 0) < 16) this.map.setZoom(16)
+		},
+
+		/** Desde la lista lateral o el modal "enfocar" */
+		enfocarIncidencia(inc) {
+			this.centrarEnIncidencia(inc)
+		},
+
+		limpiarSeleccionVisual() {
+			if (this.activeMarker) this.activeMarker.setAnimation(null)
+		},
+
+		// ─── Navegación filtrada ───────────────────────────────
+		updateFilteredIndex(forceReset = false) {
+			const total = this.filteredIncidenciasConCoordenadas.length
+			if (!total) {
+				this.filteredIndex = -1
+				return
+			}
+
+			if (forceReset || this.filteredIndex < 0 || this.filteredIndex >= total) {
+				this.filteredIndex = 0
+			}
+		},
+
+		nextFilteredIncidencia() {
+			if (!this.canNavigateFiltered) return
+			this.filteredIndex = (this.filteredIndex + 1) % this.filteredIncidenciasConCoordenadas.length
+			this.centrarEnIncidencia(this.filteredIncidenciasConCoordenadas[this.filteredIndex])
+		},
+
+		prevFilteredIncidencia() {
+			if (!this.canNavigateFiltered) return
+			this.filteredIndex = (this.filteredIndex - 1 + this.filteredIncidenciasConCoordenadas.length) % this.filteredIncidenciasConCoordenadas.length
+			this.centrarEnIncidencia(this.filteredIncidenciasConCoordenadas[this.filteredIndex])
+		},
+	},
 }
 </script>
 
 <style scoped>
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
-.animate-fade-in { animation: fadeIn .35s ease-out forwards }
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
 
-.slide-up-enter-active, .slide-up-leave-active { transition: all .3s ease }
-.slide-up-enter-from { opacity: 0; transform: translateY(12px) }
-.slide-up-leave-to   { opacity: 0; transform: translateY(12px) }
+@keyframes scaleIn {
+	from { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
+	to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+@keyframes mp-dot-glow {
+	0%, 100% { box-shadow: 0 0 0 3px rgba(255,255,255,0.7), 0 0 12px 3px var(--pulse-color, #f59e0b); }
+	50%      { box-shadow: 0 0 0 5px rgba(255,255,255,0.85), 0 0 26px 7px var(--pulse-color, #f59e0b); }
+}
+
+@keyframes mp-ring {
+	0%   { transform: scale(0.7); opacity: 0.85; }
+	70%  { transform: scale(3.6); opacity: 0; }
+	100% { transform: scale(3.6); opacity: 0; }
+}
+
+@keyframes livePulse {
+	0%   { box-shadow: 0 0 0 0   rgba(249,115,22,.55); }
+	70%  { box-shadow: 0 0 0 10px rgba(249,115,22,0); }
+	100% { box-shadow: 0 0 0 0   rgba(249,115,22,0); }
+}
+
+.animate-fade-in { animation: fadeIn .35s ease-out forwards; }
+
+/* ─── Badge en vivo ─────────────────────────────────────────────── */
+.map-live-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 999px;
+	background: #fff7ed;
+	border: 1px solid #fed7aa;
+	color: #9a3412;
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.map-live-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 999px;
+	background: #f97316;
+	box-shadow: 0 0 0 0 rgba(249,115,22,.55);
+	animation: livePulse 1.6s infinite;
+}
+
+/* ─── Controles del mapa ────────────────────────────────────────── */
+.mps-controls-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.mps-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.mps-legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 999px;
+	border: 1px solid #e5e7eb;
+	background: #fff;
+	font-size: 12px;
+	font-weight: 700;
+	color: #374151;
+}
+
+.mps-legend-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 7px;
+	color: white;
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.14);
+}
+
+.mps-legend-icon--pending    { background: #f59e0b; }
+.mps-legend-icon--inprogress { background: #3b82f6; }
+.mps-legend-icon--resolved   { background: #10b981; }
+.mps-legend-icon--rejected   { background: #ef4444; }
+
+.mps-toolbar,
+.mps-filter {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.mps-filter label {
+	font-size: 13px;
+	font-weight: 600;
+	color: #4b5563;
+}
+
+.map-status-filter {
+	min-width: 180px;
+	padding: 8px 10px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	background: #fff;
+	font-size: 14px;
+	color: #111827;
+	outline: none;
+}
+
+.map-filter-btn {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	background: white;
+	font-weight: 700;
+	color: #111827;
+	transition: .2s ease;
+}
+
+.map-filter-btn:hover:not(:disabled) { background: #f3f4f6; }
+.map-filter-btn:disabled             { opacity: .45; cursor: not-allowed; }
+
+/* ─── Pulse overlay del mapa (deep porque lo inyecta JS) ──────── */
+/* ─── Pulse overlay del mapa (deep porque lo inyecta JS) ──────── */
+:deep(.map-pulse) {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	pointer-events: none;
+	transform: translate(-50%, -50%);
+	background: var(--pulse-color, #f59e0b);
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.7), 0 0 12px 3px var(--pulse-color, #f59e0b);
+	animation: mp-dot-glow 2s ease-in-out infinite var(--pulse-delay, 0s);
+	z-index: 10;
+}
+
+:deep(.map-pulse::before),
+:deep(.map-pulse::after) {
+	content: '';
+	position: absolute;
+	inset: -3px;
+	border-radius: 50%;
+	border: 2px solid var(--pulse-color, #f59e0b);
+	opacity: 0;
+}
+
+:deep(.map-pulse::before) {
+	animation: mp-ring 2.2s ease-out infinite var(--pulse-delay, 0s);
+}
+
+:deep(.map-pulse::after) {
+	animation: mp-ring 2.2s ease-out infinite calc(var(--pulse-delay, 0s) + 1.1s);
+}
+
+/* ─── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+	.mps-controls-bar { align-items: stretch; }
+	.mps-toolbar,
+	.mps-filter       { width: 100%; }
+	.map-status-filter { flex: 1; min-width: 0; }
+}
 </style>

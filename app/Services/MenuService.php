@@ -16,6 +16,7 @@ class MenuService
                     'label' => 'PRINCIPAL',
                     'items' => [
                         ['label' => 'Dashboard', 'icon' => 'pi pi-home', 'url' => '/admin/dashboard'],
+                        ['label' => 'Dashboard Gráficas', 'icon' => 'pi pi-chart-bar', 'url' => '/admin/graficas'],
                         ['label' => 'Gestión de Usuarios', 'icon' => 'pi pi-users', 'url' => '/admin/usuariosg'],
                     ],
                 ],

@@ -1,12 +1,12 @@
 <template>
   <div class="animate-fade-in py-6 pl-4 pr-6">
     <PageHeader
-      title="Mis Órdenes de Trddabajo"
+      title="Mis Órdenes de Trabajo"
       subtitle="Tareas asignadas. Confirma tu presencia y cierra cada orden con foto de evidencia."
     >
       <template #actions>
-        <div v-if="nuevas > 0" class="flex items-center gap-2 bg-sky-50 border border-sky-200 text-sky-700 px-4 py-2 rounded-xl text-sm font-bold animate-pulse">
-          <i class="pi pi-bell text-sky-500"></i>
+        <div v-if="nuevas > 0" class="flex items-center gap-2 bg-brand-red/10 border border-brand-red/20 text-brand-red px-4 py-2 rounded-xl text-sm font-bold animate-pulse">
+          <i class="pi pi-bell text-brand-red"></i>
           {{ nuevas }} nueva{{ nuevas > 1 ? 's' : '' }} asignada{{ nuevas > 1 ? 's' : '' }}
         </div>
       </template>
@@ -16,11 +16,11 @@
     <StatsGrid :data="tareas" groupBy="estatus" :cols="4" gap="gap-4" mb="mb-6" />
 
     <!-- Vacío -->
-    <div v-if="!tareas.length" class="bg-white rounded-2xl p-14 text-center border border-[#E8E8ED]">
-      <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="pi pi-inbox text-4xl text-gray-300"></i>
+    <div v-if="!tareas.length" class="bg-app-card rounded-2xl p-14 text-center border border-app-border">
+      <div class="w-20 h-20 bg-app-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="pi pi-inbox text-4xl text-[#86868B] dark:text-[#A1A1A6] opacity-30"></i>
       </div>
-      <p class="text-gray-500 font-medium">No tienes órdenes asignadas por ahora.</p>
+      <p class="text-[#86868B] dark:text-[#A1A1A6] font-medium">No tienes órdenes asignadas por ahora.</p>
     </div>
 
     <!-- Cards de órdenes -->
@@ -28,8 +28,8 @@
       <div
         v-for="tarea in tareas"
         :key="tarea.id"
-        class="bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-md"
-        :class="tarea.estatus === 'en proceso' ? 'border-sky-300 ring-2 ring-sky-100' : 'border-[#E8E8ED]'"
+        class="bg-app-card rounded-2xl border border-app-border shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-md"
+        :class="tarea.estatus === 'en proceso' ? 'ring-2 ring-brand-red/20 border-brand-red/30' : ''"
       >
         <!-- Foto Antes -->
         <div class="relative h-40 bg-gray-100 shrink-0">
@@ -53,12 +53,12 @@
         <div class="p-4 flex flex-col flex-1 gap-2">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <p class="text-xs text-[#86868B] font-bold uppercase tracking-wide">{{ tarea.tipo_incidencia }}</p>
-              <p class="text-sm font-bold text-[#1D1D1F] mt-0.5 leading-snug">{{ tarea.direccion }}</p>
+              <p class="text-xs text-[#86868B] dark:text-[#A1A1A6] font-bold uppercase tracking-wide">{{ tarea.tipo_incidencia }}</p>
+              <p class="text-sm font-bold text-[#1D1D1F] dark:text-white mt-0.5 leading-snug">{{ tarea.direccion }}</p>
             </div>
             <span class="text-xs text-gray-400 shrink-0 font-mono">#{{ tarea.id }}</span>
           </div>
-          <p v-if="tarea.descripcion" class="text-xs text-[#86868B] line-clamp-2">{{ tarea.descripcion }}</p>
+          <p v-if="tarea.descripcion" class="text-xs text-[#86868B] dark:text-[#A1A1A6] line-clamp-2">{{ tarea.descripcion }}</p>
           <!-- Aviso de rechazo del admin -->
           <div v-if="tarea.motivo_rechazo && tarea.estatus === 'en proceso'" class="bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 flex items-start gap-2">
             <i class="pi pi-exclamation-triangle text-rose-500 mt-0.5 shrink-0"></i>
@@ -66,10 +66,10 @@
               <p class="text-xs font-bold text-rose-700">El admin rechazó la evidencia:</p>
               <p class="text-xs text-rose-600 mt-0.5">{{ tarea.motivo_rechazo }}</p>
             </div>
-          </div>          <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+          </div>          <div class="flex items-center gap-1.5 text-xs text-[#86868B] dark:text-[#A1A1A6] mt-1">
             <i class="pi pi-user text-[10px]"></i>
             <span>{{ tarea.nombre_ciudadano || 'Ciudadano' }}</span>
-            <span class="mx-1 text-gray-300">·</span>
+            <span class="mx-1 text-gray-300 dark:text-gray-700">·</span>
             <i class="pi pi-calendar text-[10px]"></i>
             <span>{{ formatDate(tarea.created_at) }}</span>
           </div>
@@ -81,9 +81,9 @@
           <button
             v-if="tarea.latitud && tarea.longitud"
             @click="abrirMapa(tarea)"
-            class="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold bg-[#F5F5F7] text-[#1D1D1F] hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-200 transition"
+            class="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold bg-app-secondary text-[#1D1D1F] dark:text-white hover:bg-app-bg transition border border-transparent"
           >
-            <i class="pi pi-map-marker"></i> Ver ubicación en mapa
+            <i class="pi pi-map-marker text-brand-red"></i> Ver ubicación en mapa
           </button>
           <p v-else class="text-xs text-center text-gray-400 italic py-1">Sin coordenadas registradas</p>
 
@@ -91,7 +91,7 @@
           <button
             v-if="tarea.estatus === 'en proceso'"
             @click="abrirCierre(tarea)"
-            class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm hover:shadow-emerald-200 hover:shadow-md transition"
+            class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-brand-gradient text-white hover:opacity-90 shadow-lg shadow-brand-red/20 transition-all active:scale-95"
           >
             <i class="pi pi-send"></i> Enviar evidencia para revisión
           </button>
@@ -129,9 +129,9 @@
           style="height:380px" frameborder="0" scrolling="no" loading="lazy"
         ></iframe>
         <a
-          :href="`https://www.openstreetmap.org/?mlat=${mapaActual?.latitud}&mlon=${mapaActual?.longitud}#map=17/${mapaActual?.latitud}/${mapaActual?.longitud}`"
-          target="_blank" class="text-xs text-center text-sky-600 hover:underline"
-        ><i class="pi pi-external-link mr-1"></i>Abrir en OpenStreetMap</a>
+          :href="`https://www.google.com/maps?q=${mapaActual?.latitud},${mapaActual?.longitud}`"
+          target="_blank" class="text-xs text-center text-[#8A1538] hover:underline"
+        ><i class="pi pi-external-link mr-1"></i>Abrir en Google Maps</a>
       </div>
     </Dialog>
 
@@ -144,13 +144,13 @@
     >
       <div class="flex flex-col gap-5 py-2">
         <!-- Resumen -->
-        <div class="bg-[#F5F5F7] rounded-xl p-3 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-            <i class="pi pi-wrench text-emerald-600"></i>
+        <div class="bg-app-secondary rounded-xl p-3 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center shrink-0">
+            <i class="pi pi-wrench text-brand-red"></i>
           </div>
           <div>
-            <p class="text-sm font-bold text-[#1D1D1F]">{{ cierreActual?.tipo_incidencia }}</p>
-            <p class="text-xs text-[#86868B]">{{ cierreActual?.direccion }}</p>
+            <p class="text-sm font-bold text-[#1D1D1F] dark:text-white">{{ cierreActual?.tipo_incidencia }}</p>
+            <p class="text-xs text-[#86868B] dark:text-[#A1A1A6]">{{ cierreActual?.direccion }}</p>
           </div>
         </div>
 
@@ -163,7 +163,7 @@
           <input
             type="file" accept="image/*" capture="environment"
             @change="onFotoChange"
-            class="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-[#E8E8ED] rounded-xl p-1 cursor-pointer"
+            class="block w-full text-sm text-[#86868B] dark:text-[#A1A1A6] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-brand-red/10 file:text-brand-red hover:file:bg-brand-red/20 border border-app-border rounded-xl p-1 cursor-pointer bg-app-secondary"
           />
           <div v-if="fotoPreview" class="relative mt-1 rounded-xl overflow-hidden border border-[#E8E8ED] h-40">
             <img :src="fotoPreview" class="w-full h-full object-cover" alt="preview" />
@@ -183,7 +183,7 @@
           <button
             @click="capturarGPS" :disabled="gpsLoading"
             class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm border transition"
-            :class="gpsOk ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-[#F5F5F7] border-[#E8E8ED] text-[#1D1D1F] hover:bg-sky-50 hover:border-sky-300 hover:text-sky-700'"
+            :class="gpsOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600' : 'bg-app-secondary border-app-border text-[#1D1D1F] dark:text-white hover:bg-app-bg'"
           >
             <i :class="gpsLoading ? 'pi pi-spin pi-spinner' : gpsOk ? 'pi pi-check-circle' : 'pi pi-crosshairs'"></i>
             {{ gpsLoading ? 'Obteniendo ubicación...' : gpsOk ? `GPS capturado (±${gpsAccuracy}m)` : 'Capturar mi ubicación GPS' }}
@@ -261,8 +261,7 @@ export default {
       return 'bg-amber-400 text-white'
     },
     osmUrl(lat, lng) {
-      const d = 0.008
-      return `https://www.openstreetmap.org/export/embed.html?bbox=${lng-d},${lat-d},${lng+d},${lat+d}&layer=mapnik&marker=${lat},${lng}`
+      return `https://www.google.com/maps/embed/v1/place?key=AIzaSyCchiqlRlOnv6C4pXxh59tYDMRiK501Tmc&q=${lat},${lng}&zoom=17`
     },
     abrirMapa(tarea)  { this.mapaActual = tarea; this.mapaVisible = true },
     abrirCierre(tarea) {
