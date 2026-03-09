@@ -121,7 +121,7 @@
                 <InputText
                   id="email"
                   v-model="form.email"
-                  class="w-full !pl-4 !pr-4 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
+                  class="w-full !pl-4 !pr-4 !py-3 !bg-white dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200 shadow-sm"
                   :class="{ '!border-red-500': validationErrors.email || form.errors.email }"
                 />
                 <label for="email" class="text-gray-500">Correo Electrónico</label>
@@ -141,7 +141,7 @@
                   :feedback="false"
                   toggleMask
                   class="w-full"
-                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
+                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-white dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200 shadow-sm"
                   :class="{ '!border-red-500': validationErrors.password || form.errors.password }"
                 />
                 <label for="password" class="text-gray-500">Contraseña</label>

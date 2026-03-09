@@ -62,6 +62,15 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Verificar si el usuario existe y si está activo
+        $user = User::where('email', $credentials['email'])->first();
+
+        if ($user && !$user->activo) {
+            return back()->withErrors([
+                'email' => 'Tu cuenta se encuentra desactivada actualmente. Por favor, contacta con soporte o con un administrador.',
+            ]);
+        }
+
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
 
@@ -92,7 +101,7 @@ class AuthController extends Controller
 
         // Permitimos 'administrador', 'admin', o variantes
         if ($rol === 'administrador' || $rol === 'admin') {
-            return redirect('/admin/usuariosg');
+            return redirect('/admin/dashboard');
         }
 
         // Redirigir trabajadores al dashboard correspondiente

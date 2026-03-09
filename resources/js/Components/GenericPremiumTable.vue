@@ -67,43 +67,77 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-app-secondary dark:divide-app-border">
-          <tr 
-            v-for="(row, index) in paginatedData" 
-            :key="index"
-            class="group hover:bg-app-secondary/30 dark:hover:bg-white/5 transition-colors duration-150"
-            :class="{ 'bg-brand-red/5 dark:bg-brand-red/10': isSelected(row) }"
-          >
-            <!-- Checkbox de Fila -->
-            <td v-if="selectable" class="px-6 py-4 align-middle border-none">
-               <input 
-                  type="checkbox" 
-                  :checked="isSelected(row)" 
-                  @change="toggleSelection(row)"
-                  class="w-5 h-5 rounded-md border-gray-300 text-brand-red focus:ring-brand-red cursor-pointer transition-all"
-                >
-            </td>
+          <!-- ── SKELETON LOADING STATE ── -->
+          <template v-if="loading">
+            <tr v-for="n in rowsPerPage" :key="'skel-' + n" class="animate-pulse">
+              <td v-if="selectable" class="px-6 py-4">
+                <div class="skeleton w-5 h-5 rounded-md"></div>
+              </td>
+              <td v-for="(col, ci) in columns" :key="ci" class="px-6 py-4">
+                <!-- Primera columna: ID corto -->
+                <div v-if="ci === 0" class="skeleton h-4 w-10 rounded-md"></div>
+                <!-- Segunda columna: avatar + texto -->
+                <div v-else-if="ci === 1" class="flex items-center gap-3">
+                  <div class="skeleton w-8 h-8 rounded-lg shrink-0"></div>
+                  <div class="flex-1 space-y-1.5">
+                    <div class="skeleton h-3.5 rounded-md" :style="{ width: (55 + Math.random() * 30) + '%' }"></div>
+                    <div class="skeleton h-2.5 w-1/3 rounded-md"></div>
+                  </div>
+                </div>
+                <!-- Penúltima columna: badge -->
+                <div v-else-if="ci === columns.length - 2" class="skeleton h-5 w-16 rounded-full"></div>
+                <!-- Última columna: botones -->
+                <div v-else-if="ci === columns.length - 1" class="flex items-center gap-1.5">
+                  <div class="skeleton w-8 h-8 rounded-lg"></div>
+                  <div class="skeleton w-8 h-8 rounded-lg"></div>
+                  <div class="skeleton w-8 h-8 rounded-lg"></div>
+                </div>
+                <!-- Columnas intermedias -->
+                <div v-else class="skeleton h-3.5 rounded-md" :style="{ width: (40 + Math.random() * 40) + '%' }"></div>
+              </td>
+            </tr>
+          </template>
 
-            <td 
-              v-for="col in columns" 
-              :key="col.key"
-              class="px-6 py-4 whitespace-nowrap align-middle"
+          <!-- ── DATA ROWS ── -->
+          <template v-else>
+            <tr 
+              v-for="(row, index) in paginatedData" 
+              :key="index"
+              class="group hover:bg-app-secondary/30 dark:hover:bg-white/5 transition-colors duration-150"
+              :class="{ 'bg-brand-red/5 dark:bg-brand-red/10': isSelected(row) }"
             >
-              <!-- Slot dinámico por columna: cell-NOMBRE_COLUMNA -->
-              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
-                <span class="font-bold text-[#1D1D1F] dark:text-gray-200">{{ row[col.key] }}</span>
-              </slot>
-            </td>
-          </tr>
-          
-          <!-- Empty State -->
-          <tr v-if="!data || data.length === 0">
-            <td :colspan="selectable ? columns.length + 1 : columns.length" class="px-6 py-12 text-center">
-              <div class="flex flex-col items-center gap-2 text-[#86868B] dark:text-[#A1A1A6]">
-                <i class="pi pi-inbox text-3xl opacity-20"></i>
-                <p class="font-bold">No hay registros disponibles</p>
-              </div>
-            </td>
-          </tr>
+              <!-- Checkbox de Fila -->
+              <td v-if="selectable" class="px-6 py-4 align-middle border-none">
+                 <input 
+                    type="checkbox" 
+                    :checked="isSelected(row)" 
+                    @change="toggleSelection(row)"
+                    class="w-5 h-5 rounded-md border-gray-300 text-brand-red focus:ring-brand-red cursor-pointer transition-all"
+                  >
+              </td>
+
+              <td 
+                v-for="col in columns" 
+                :key="col.key"
+                class="px-6 py-4 whitespace-nowrap align-middle"
+              >
+                <!-- Slot dinámico por columna: cell-NOMBRE_COLUMNA -->
+                <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
+                  <span class="font-bold text-[#1D1D1F] dark:text-gray-200">{{ row[col.key] }}</span>
+                </slot>
+              </td>
+            </tr>
+            
+            <!-- Empty State -->
+            <tr v-if="!data || data.length === 0">
+              <td :colspan="selectable ? columns.length + 1 : columns.length" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center gap-2 text-[#86868B] dark:text-[#A1A1A6]">
+                  <i class="pi pi-inbox text-3xl opacity-20"></i>
+                  <p class="font-bold">No hay registros disponibles</p>
+                </div>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -187,6 +221,10 @@ const props = defineProps({
   selection: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

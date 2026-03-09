@@ -135,117 +135,36 @@
       </div>
     </Dialog>
 
-    <!-- Dialog: Cerrar Orden -->
-    <Dialog
+    <!-- Modal de Cierre Refactorizado -->
+    <CerrarOrdenModal 
       v-model:visible="cierreVisible"
-      header="Cerrar Orden de Trabajo"
-      :modal="true" :style="{ width: '520px', maxWidth: '95vw' }" :draggable="false"
-      :closable="!cerrando"
-    >
-      <div class="flex flex-col gap-5 py-2">
-        <!-- Resumen -->
-        <div class="bg-app-secondary rounded-xl p-3 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center shrink-0">
-            <i class="pi pi-wrench text-brand-red"></i>
-          </div>
-          <div>
-            <p class="text-sm font-bold text-[#1D1D1F] dark:text-white">{{ cierreActual?.tipo_incidencia }}</p>
-            <p class="text-xs text-[#86868B] dark:text-[#A1A1A6]">{{ cierreActual?.direccion }}</p>
-          </div>
-        </div>
-
-        <!-- Foto DESPUÉS (obligatoria) -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-[#1D1D1F] uppercase tracking-wide flex items-center gap-1">
-            <i class="pi pi-camera text-[#850D12]"></i>
-            Foto “Después” <span class="text-rose-500">*</span>
-          </label>
-          <input
-            type="file" accept="image/*" capture="environment"
-            @change="onFotoChange"
-            class="block w-full text-sm text-[#86868B] dark:text-[#A1A1A6] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-brand-red/10 file:text-brand-red hover:file:bg-brand-red/20 border border-app-border rounded-xl p-1 cursor-pointer bg-app-secondary"
-          />
-          <div v-if="fotoPreview" class="relative mt-1 rounded-xl overflow-hidden border border-[#E8E8ED] h-40">
-            <img :src="fotoPreview" class="w-full h-full object-cover" alt="preview" />
-            <button @click="fotoPreview = null; fotoDespues = null" class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600">
-              <i class="pi pi-times text-[10px]"></i>
-            </button>
-          </div>
-          <p v-if="errors.foto_despues" class="text-xs text-rose-500">{{ errors.foto_despues }}</p>
-        </div>
-
-        <!-- GPS (obligatorio) -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-[#1D1D1F] uppercase tracking-wide flex items-center gap-1">
-            <i class="pi pi-map-marker text-[#850D12]"></i>
-            Ubicación actual <span class="text-rose-500">*</span>
-          </label>
-          <button
-            @click="capturarGPS" :disabled="gpsLoading"
-            class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm border transition"
-            :class="gpsOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600' : 'bg-app-secondary border-app-border text-[#1D1D1F] dark:text-white hover:bg-app-bg'"
-          >
-            <i :class="gpsLoading ? 'pi pi-spin pi-spinner' : gpsOk ? 'pi pi-check-circle' : 'pi pi-crosshairs'"></i>
-            {{ gpsLoading ? 'Obteniendo ubicación...' : gpsOk ? `GPS capturado (±${gpsAccuracy}m)` : 'Capturar mi ubicación GPS' }}
-          </button>
-          <p v-if="gpsError" class="text-xs text-rose-500">{{ gpsError }}</p>
-          <iframe
-            v-if="gpsOk"
-            :src="osmUrl(latCierre, lngCierre)"
-            class="w-full rounded-xl border border-emerald-200 mt-1" style="height:160px"
-            frameborder="0" scrolling="no"
-          ></iframe>
-        </div>
-
-        <!-- Notas (opcional) -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-[#1D1D1F] uppercase tracking-wide">
-            <i class="pi pi-pencil text-[#86868B] mr-1"></i>Notas de cierre
-            <span class="text-[#86868B] font-normal normal-case tracking-normal">(opcional)</span>
-          </label>
-          <Textarea v-model="notas" :rows="3" placeholder="Describe brevemente el trabajo realizado..." class="w-full text-sm resize-none" />
-        </div>
-
-        <p v-if="cierreError" class="text-sm text-rose-600 bg-rose-50 rounded-xl px-3 py-2 border border-rose-200">
-          <i class="pi pi-exclamation-circle mr-1"></i>{{ cierreError }}
-        </p>
-      </div>
-
-      <template #footer>
-        <div class="flex gap-2 justify-end">
-          <Button label="Cancelar" severity="secondary" outlined @click="cierreVisible = false" :disabled="cerrando" />
-          <Button
-            label="Confirmar cierre" icon="pi pi-check" :loading="cerrando"
-            :disabled="!fotoDespues || !gpsOk"
-            @click="confirmarCierre"
-          />
-        </div>
-      </template>
-    </Dialog>
+      :tarea="cierreActual"
+      @success="onCierreExito"
+    />
 
     <Toast />
   </div>
 </template>
 
 <script>
-import Dialog   from 'primevue/dialog'
-import Button   from 'primevue/button'
-import Textarea from 'primevue/textarea'
+import Dialog from 'primevue/dialog'
+import PageHeader from '@/Components/PageHeader.vue'
+import StatsGrid from '@/Components/StatsGrid.vue'
+import CerrarOrdenModal from '@/Components/CerrarOrdenModal.vue'
 
 export default {
-  components: { Dialog, Button, Textarea },
+  name: 'Tareas',
+  components: { Dialog, PageHeader, StatsGrid, CerrarOrdenModal },
   props: {
     tareas: { type: Array,  default: () => [] },
     nuevas: { type: Number, default: 0 },
   },
   data() {
     return {
-      mapaVisible: false, mapaActual: null,
-      cierreVisible: false, cierreActual: null,
-      fotoDespues: null, fotoPreview: null,
-      latCierre: null, lngCierre: null,
-      gpsLoading: false, gpsOk: false, gpsAccuracy: null, gpsError: null,
-      notas: '', cerrando: false, cierreError: null, errors: {},
+      mapaVisible: false,
+      mapaActual: null,
+      cierreVisible: false,
+      cierreActual: null,
     }
   },
   methods: {
@@ -263,62 +182,54 @@ export default {
     osmUrl(lat, lng) {
       return `https://www.google.com/maps/embed/v1/place?key=AIzaSyCchiqlRlOnv6C4pXxh59tYDMRiK501Tmc&q=${lat},${lng}&zoom=17`
     },
-    abrirMapa(tarea)  { this.mapaActual = tarea; this.mapaVisible = true },
+    abrirMapa(tarea) { 
+      this.mapaActual = tarea
+      this.mapaVisible = true 
+    },
     abrirCierre(tarea) {
-      Object.assign(this.$data, {
-        cierreActual: tarea, fotoDespues: null, fotoPreview: null,
-        latCierre: null, lngCierre: null, gpsOk: false, gpsAccuracy: null,
-        gpsError: null, notas: '', cierreError: null, errors: {},
-      })
+      this.cierreActual = tarea
       this.cierreVisible = true
     },
-    onFotoChange(e) {
-      const file = e.target.files[0]
-      if (!file) return
-      this.fotoDespues = file
-      this.fotoPreview = URL.createObjectURL(file)
-      this.errors = { ...this.errors, foto_despues: null }
-    },
-    capturarGPS() {
-      if (!navigator.geolocation) { this.gpsError = 'Tu dispositivo no soporta geolocalización.'; return }
-      this.gpsLoading = true; this.gpsError = null; this.gpsOk = false
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          this.latCierre = pos.coords.latitude
-          this.lngCierre = pos.coords.longitude
-          this.gpsAccuracy = Math.round(pos.coords.accuracy)
-          this.gpsOk = true; this.gpsLoading = false
-        },
-        (err) => { this.gpsError = `No se pudo obtener la ubicación: ${err.message}`; this.gpsLoading = false },
-        { enableHighAccuracy: true, timeout: 10000 }
-      )
-    },
-    confirmarCierre() {
-      if (!this.fotoDespues || !this.gpsOk) return
-      this.cerrando = true; this.cierreError = null
-      const form = new FormData()
-      form.append('foto_despues', this.fotoDespues)
-      form.append('lat_cierre',   this.latCierre)
-      form.append('lng_cierre',   this.lngCierre)
-      form.append('notas_cierre', this.notas)
-      axios.post(`/trabajador/incidencias/${this.cierreActual.id}/cerrar`, form, {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content },
-      }).then(() => {
-        this.$toast.add({ severity: 'info', summary: 'Evidencia enviada', detail: 'Esperando revisión del administrador.', life: 4000 })
-        this.cierreVisible = false
-        const t = this.tareas.find(t => t.id === this.cierreActual.id)
-        if (t) { t.estatus = 'en revisión'; t.motivo_rechazo = null }
-      }).catch(e => {
-        const errs = e.response?.data?.errors
-        if (errs) this.errors = Object.fromEntries(Object.entries(errs).map(([k,v]) => [k, v[0]]))
-        else this.cierreError = 'Error al cerrar la orden. Intenta de nuevo.'
-      }).finally(() => { this.cerrando = false })
-    },
-  },
+    onCierreExito(tareaId) {
+      this.$toast.add({ 
+        severity: 'info', 
+        summary: 'Evidencia enviada', 
+        detail: 'Esperando revisión del administrador.', 
+        life: 4000 
+      })
+      const t = this.tareas.find(t => t.id === tareaId)
+      if (t) { 
+        t.estatus = 'en revisión'
+        t.motivo_rechazo = null 
+      }
+    }
+  }
 }
 </script>
 
 <style scoped>
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 .animate-fade-in { animation: fadeIn .35s ease-out forwards }
+</style>
+
+<style>
+/* Estilo GLOBAL para el contenedor de sugerencias de Google Places */
+.pac-container {
+  z-index: 10000 !important; /* Ajustado para que funcione bien con el nuevo modal */
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  font-family: inherit;
+}
+.pac-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.pac-item:hover {
+  background-color: #F5F5F7;
+}
+.pac-item-query {
+  font-size: 14px;
+  color: #1D1D1F;
+}
 </style>

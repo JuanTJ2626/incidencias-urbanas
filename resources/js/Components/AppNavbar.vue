@@ -28,6 +28,16 @@
 
       <!-- Right: actions + user -->
       <div class="flex items-center gap-3">
+        <!-- Search Trigger (Ctrl+K) -->
+        <button
+          @click="openSearch"
+          class="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-app-secondary/50 dark:bg-white/5 border border-app-border hover:border-brand-red/30 transition-all duration-200 group"
+        >
+          <i class="pi pi-search text-sm text-[#86868B] group-hover:text-brand-red transition-colors"></i>
+          <span class="text-xs text-[#86868B] font-medium">Buscar...</span>
+          <kbd class="ml-2 text-[10px] font-bold text-[#86868B] bg-white dark:bg-white/10 px-1.5 py-0.5 rounded border border-app-border">⌘K</kbd>
+        </button>
+
         <!-- Dark Mode Toggle -->
         <Button
           :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
@@ -102,6 +112,10 @@ const userNameUpper = computed(() => (userName.value || 'Usuario').toUpperCase()
 const initial = computed(() => (user.value.name ? user.value.name.charAt(0).toUpperCase() : 'U'))
 
 const emitToggle = () => emit('toggleSidebar')
+
+const openSearch = () => {
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))
+}
 </script>
 
 <style scoped>

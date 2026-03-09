@@ -1,11 +1,16 @@
 <template>
   <div class="flex h-screen overflow-hidden bg-[var(--app-bg-gradient)] transition-colors duration-500">
+    <!-- Mesh Gradient Animado de Fondo -->
+    <div class="mesh-gradient-bg">
+      <div class="mesh-orb-3"></div>
+    </div>
+
     <!-- Sidebar Global -->
     <AppSidebar v-model:visible="sidebarVisible" />
 
     <!-- Content Area with Dynamic Padding to avoid overlap -->
     <div
-      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative"
+      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10"
       :class="[sidebarVisible ? 'lg:pl-72' : 'lg:pl-20']"
     >
 
@@ -19,6 +24,9 @@
         <slot />
       </main>
     </div>
+
+    <!-- Buscador Global (Cmd+K / Ctrl+K) -->
+    <GlobalSearch />
   </div>
 </template>
 
@@ -27,6 +35,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import AppSidebar from "@/Components/AppSidebar.vue";
 import AppNavbar from "@/Components/AppNavbar.vue";
 import AppToast from "@/Components/AppToast.vue";
+import GlobalSearch from "@/Components/GlobalSearch.vue";
 
 const sidebarVisible = ref(false);
 
@@ -50,3 +59,4 @@ onBeforeUnmount(() => {
   overflow-x: hidden;
 }
 </style>
+
