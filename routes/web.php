@@ -24,6 +24,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller
     Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/users/bulk-delete', [AdminController::class, 'bulkDeleteUsers'])->name('admin.users.bulk-delete');
     Route::patch('/users/{id}/toggle-activo', [AdminController::class, 'toggleActivo'])->name('admin.users.toggle-activo');
     Route::get('/prueba', 'testing')->name('admin.prueba');
     Route::get('/usuariosg', 'usersView');
@@ -31,11 +32,13 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->controller
     Route::post('/incidencias', 'storeIncidencia')->name('admin.incidencias.store');
     Route::put('/incidencias/{id}', 'updateIncidencia')->name('admin.incidencias.update');
     Route::delete('/incidencias/{id}', 'destroyIncidencia')->name('admin.incidencias.destroy');
+    Route::post('/incidencias/bulk-delete', 'bulkDeleteIncidencias')->name('admin.incidencias.bulk-delete');
     Route::patch('/incidencias/{id}/estatus', 'cambiarEstatus')->name('admin.incidencias.estatus');
     Route::patch('/incidencias/{id}/asignar', 'asignarTrabajador')->name('admin.incidencias.asignar');
     Route::patch('/incidencias/{id}/revisar', 'revisarCierre')->name('admin.incidencias.revisar');
     Route::get('/monitoreo', 'monitoreo')->name('admin.monitoreo');
     Route::get('/mapa', 'mapaCalor')->name('admin.mapa');
+    Route::get('/graficas', 'graficas')->name('admin.graficas');
     });
     
     Route::apiResource('incidencias', IncidenciasController::class);

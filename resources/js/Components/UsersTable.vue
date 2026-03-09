@@ -24,12 +24,12 @@
           <Avatar
             :label="data.name.charAt(0)"
             shape="circle"
-            class="!bg-gray-100 !text-gray-600 !font-bold !border !border-gray-200"
+            class="!bg-gray-100 dark:!bg-white/5 !text-gray-600 dark:!text-gray-400 !font-bold !border !border-gray-200 dark:!border-white/10"
             size="large"
           />
           <div>
-            <span class="block font-bold text-gray-800 text-base">{{ data.name }}</span>
-            <span class="block text-sm text-gray-400">{{ data.email }}</span>
+            <span class="block font-bold text-gray-800 dark:text-gray-200 text-base">{{ data.name }}</span>
+            <span class="block text-sm text-gray-400 dark:text-gray-500">{{ data.email }}</span>
           </div>
         </div>
       </template>
@@ -53,7 +53,7 @@
       :style="{ minWidth: '240px' }"
     >
       <template #body="{ data }">
-        <span class="text-sm font-medium text-gray-500">{{
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{{
           new Date(data.created_at).toLocaleDateString()
         }}</span>
       </template>
@@ -67,8 +67,8 @@
           :class="[
             'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all',
             data.activo
-              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-              : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+              ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/20'
+              : 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/20'
           ]"
         >
           <i :class="data.activo ? 'pi pi-check-circle' : 'pi pi-ban'"></i>
@@ -86,7 +86,7 @@
             rounded
             @click="$emit('edit', data)"
             v-tooltip.top="'Editar'"
-            class="hover:bg-[#607C88]/10 text-[#607C88]"
+            class="hover:bg-[#607C88]/10 text-[#607C88] dark:text-gray-400 dark:hover:bg-white/5"
           />
           <Button
             icon="pi pi-trash"
@@ -95,7 +95,7 @@
             :loading="deletingId === data.id"
             @click="$emit('delete', data)"
             v-tooltip.top="'Eliminar'"
-            class="hover:bg-[#850D12]/10 text-[#850D12]"
+            class="hover:bg-[#850D12]/10 dark:hover:bg-[#ff453a]/10 text-[#850D12] dark:text-[#ff453a]"
           />
         </div>
       </template>
@@ -166,6 +166,9 @@ const totalCount = computed(() => props.value.length);
 .text-sidebar-primary {
   color: #850D12; /* sidebar primary red */
 }
+:global(.dark) .text-sidebar-primary {
+  color: #ff453a;
+}
 
 .role-tag {
   display: inline-flex;
@@ -193,14 +196,49 @@ const totalCount = computed(() => props.value.length);
   background: #F5F5F7;
   color: #1D1D1F !important;
 }
+:global(.dark) .tag-default {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ebebf5 !important;
+}
 
 /* Row hover and deleting states (subtle, using sidebar tones) */
 :deep(.row-hover:hover) {
   background: rgba(133,13,18,0.04) !important;
 }
+:global(.dark) :deep(.row-hover:hover) {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
 
 :deep(.row-deleting) {
   opacity: 0.6 !important;
   pointer-events: none !important;
+}
+
+/* PrimeVue Table Dark Overrides */
+:global(.dark) :deep(.p-datatable) {
+  background: transparent !important;
+}
+:global(.dark) :deep(.p-datatable-thead > tr > th) {
+  background: #1C1C1E !important;
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+  color: #a1a1a6 !important;
+}
+:global(.dark) :deep(.p-datatable-tbody > tr) {
+  background: #111112 !important;
+  color: #ebebf5 !important;
+}
+:global(.dark) :deep(.p-datatable-tbody > tr > td) {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+:global(.dark) :deep(.p-paginator) {
+  background: #111112 !important;
+  border-top-color: rgba(255, 255, 255, 0.05) !important;
+}
+:global(.dark) :deep(.p-paginator .p-paginator-page) {
+    color: #a1a1a6 !important;
+}
+:global(.dark) :deep(.p-paginator .p-paginator-page.p-highlight) {
+    background: #ff453a !important;
+    color: white !important;
 }
 </style>

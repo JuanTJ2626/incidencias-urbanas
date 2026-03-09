@@ -1,13 +1,14 @@
 <template>
-  <div class="flex h-screen overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
+  <div class="flex h-screen overflow-hidden bg-[var(--app-bg-gradient)] transition-colors duration-500">
     <!-- Sidebar Global -->
     <AppSidebar v-model:visible="sidebarVisible" />
 
     <!-- Content Area with Dynamic Padding to avoid overlap -->
     <div
-      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[#F2F2F7] dark:bg-gray-950"
+      class="flex-1 flex flex-col min-w-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative"
       :class="[sidebarVisible ? 'lg:pl-72' : 'lg:pl-20']"
     >
+
       <!-- Navbar Global -->
       <AppNavbar @toggleSidebar="sidebarVisible = !sidebarVisible" />
 

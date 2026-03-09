@@ -11,18 +11,18 @@
         <InputText 
           id="f-name" 
           v-model="form.name" 
-          class="w-full !rounded-2xl !py-4 !bg-[#F5F5F7] !border-transparent focus:!bg-white focus:!border-[#E8E8ED] !font-bold transition-all" 
+          class="w-full !rounded-2xl !py-4 transition-all" 
         />
-        <label for="f-name" class="!font-bold !text-[#86868B]">Nombre Completo</label>
+        <label for="f-name" class="!font-bold">Nombre Completo</label>
       </FloatLabel>
 
       <FloatLabel>
         <InputText 
           id="f-email" 
           v-model="form.email" 
-          class="w-full !rounded-2xl !py-4 !bg-[#F5F5F7] !border-transparent focus:!bg-white focus:!border-[#E8E8ED] !font-bold transition-all" 
+          class="w-full !rounded-2xl !py-4 transition-all" 
         />
-        <label for="f-email" class="!font-bold !text-[#86868B]">Correo Electrónico</label>
+        <label for="f-email" class="!font-bold">Correo Electrónico</label>
       </FloatLabel>
 
       <FloatLabel>
@@ -32,34 +32,34 @@
           toggleMask 
           :feedback="false" 
           class="w-full" 
-          inputClass="w-full !rounded-2xl !py-4 !bg-[#F5F5F7] !border-transparent focus:!bg-white focus:!border-[#E8E8ED] !font-bold transition-all" 
+          inputClass="w-full !rounded-2xl !py-4 transition-all" 
         />
-        <label for="f-pass" class="!font-bold !text-[#86868B]">Contraseña</label>
+        <label for="f-pass" class="!font-bold">Contraseña</label>
       </FloatLabel>
 
       <div class="flex flex-col gap-3">
-        <label class="text-[10px] font-black text-[#86868B] uppercase tracking-[0.2em] ml-2">Seleccionar Rol</label>
+        <label class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-[0.2em] ml-2">Seleccionar Rol</label>
         <Dropdown 
           v-model="form.rol" 
           :options="roles" 
           optionLabel="nombre" 
           optionValue="nombre" 
           placeholder="Elegir..." 
-          class="w-full !rounded-2xl !border-transparent !bg-[#F5F5F7] !py-1 focus:!bg-white focus:!border-[#E8E8ED] !font-bold transition-all" 
+          class="w-full !rounded-2xl !py-1 transition-all" 
         />
       </div>
 
-      <div class="flex justify-end gap-3 pt-6 border-t border-[#F5F5F7] mt-4">
+      <div class="flex justify-end gap-3 pt-6 border-t border-[#F5F5F7] dark:border-white/5 mt-4">
         <Button 
           label="Cancelar" 
           text 
-          class="!text-[#86868B] !font-bold hover:!text-[#1D1D1F] !px-6" 
+          class="!text-[#86868B] dark:!text-[#A1A1A6] !font-bold hover:!text-[#1D1D1F] dark:hover:!text-white !px-6" 
           @click="close" 
         />
         <Button 
           :label="primaryLabel" 
           :loading="form.processing"
-          class="!bg-[#1D1D1F] !border-[#1D1D1F] !rounded-2xl !px-10 !py-4 !font-black !shadow-xl hover:!scale-105 active:!scale-95 transition-all" 
+          class="!bg-[#1D1D1F] dark:!bg-white !border-[#1D1D1F] dark:!border-white dark:!text-black !rounded-2xl !px-10 !py-4 !font-black !shadow-xl hover:!scale-105 active:!scale-95 transition-all" 
           type="submit" 
         />
       </div>
@@ -141,19 +141,8 @@ function onSubmit() {
 </script>
 
 <style scoped>
-:deep(.p-dialog-header) {
-  padding: 2.5rem 2rem 0;
-  background: white;
-}
-:deep(.p-dialog-title) {
-  font-weight: 900;
-  font-size: 1.5rem;
-  letter-spacing: -0.025em;
-  color: #1D1D1F;
-}
-:deep(.p-dialog-content) {
-  background: white;
-  padding: 0 1rem;
+:deep(.p-dialog-header), :deep(.p-dialog-content) {
+  background: var(--app-card) !important;
 }
 :deep(.p-float-label label) {
   margin-left: 0.5rem;

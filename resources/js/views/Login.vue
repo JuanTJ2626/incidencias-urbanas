@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full flex overflow-hidden bg-[#F5F5F7]">
+  <div class="min-h-screen w-full flex overflow-hidden bg-app-bg transition-colors duration-500">
     <Toast position="top-right" />
 
     <!-- Left Side: Visual / Branding (TUYO ORIGINAL) -->
@@ -20,7 +20,7 @@
         <!-- Logo / Brand Header -->
         <div class="flex items-center gap-4 mb-10">
           <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10">
-            <i class="pi pi-building text-2xl text-[#8A1538]"></i>
+            <i class="pi pi-building text-2xl text-brand-red"></i>
           </div>
           <div class="flex flex-col">
             <span class="text-[11px] tracking-[0.25em] font-medium text-[#D1A7B0] uppercase">Plataforma Municipal</span>
@@ -32,12 +32,12 @@
         <h2 class="text-4xl font-extrabold mb-5 leading-tight">
           <span class="block">Reporta, Supervisa</span>
           <span class="block">y Mejora tu</span>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#8A1538]">Ciudad</span>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-brand-red">Ciudad</span>
         </h2>
 
         <!-- Accent Line -->
         <div class="flex gap-1 mb-6">
-          <div class="h-1 w-12 bg-[#8A1538] rounded-full"></div>
+          <div class="h-1 w-12 bg-brand-red rounded-full"></div>
           <div class="h-1 w-6 bg-gray-300 rounded-full"></div>
           <div class="h-1 w-6 bg-gray-100 rounded-full"></div>
         </div>
@@ -50,19 +50,19 @@
         <div class="mt-10 space-y-4">
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-              <i class="pi pi-map-marker text-sm text-[#8A1538]"></i>
+              <i class="pi pi-map-marker text-sm text-brand-red"></i>
             </div>
             <span class="text-sm text-gray-300">Geolocaliza y reporta problemas urbanos al instante</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-              <i class="pi pi-chart-line text-sm text-[#8A1538]"></i>
+              <i class="pi pi-chart-line text-sm text-brand-red"></i>
             </div>
             <span class="text-sm text-gray-300">Seguimiento en tiempo real del estado de tus reportes</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-              <i class="pi pi-users text-sm text-[#8A1538]"></i>
+              <i class="pi pi-users text-sm text-brand-red"></i>
             </div>
             <span class="text-sm text-gray-300">Comunicación directa con las autoridades responsables</span>
           </div>
@@ -78,8 +78,8 @@
         <!-- Mobile Header -->
         <div class="lg:hidden text-center mb-10">
           <div class="flex justify-center mb-3">
-            <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
-              <i class="pi pi-building text-xl text-[#8A1538]"></i>
+            <div class="w-12 h-12 bg-app-secondary rounded-xl flex items-center justify-center border border-app-border">
+              <i class="pi pi-building text-xl text-brand-red"></i>
             </div>
           </div>
           <h1 class="text-2xl font-bold text-gray-900">Incidencias Urbanas</h1>
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Form Card -->
-        <div class="bg-white p-8 lg:p-10 rounded-3xl shadow-xl border border-gray-100 relative">
+        <div class="bg-white dark:bg-app-card p-8 lg:p-10 rounded-3xl shadow-xl border border-app-border relative transition-colors">
           <!-- Form Header (MEJORADO CON LOGO 3D) -->
           <div class="text-center mb-10">
             <div class="hidden lg:flex justify-center mb-6">
@@ -103,7 +103,7 @@
             </h1>
             <!-- LINEAS DECORATIVAS MEJORADAS -->
             <div class="flex justify-center items-center gap-1.5 mb-4">
-              <div class="h-1 w-10 bg-gradient-to-r from-[#8A1538] to-[#D1A7B0] rounded-full"></div>
+              <div class="h-1 w-10 bg-gradient-to-r from-brand-red to-[#D1A7B0] rounded-full"></div>
               <div class="h-1 w-3 bg-gray-400/50 rounded-full"></div>
               <div class="h-1 w-3 bg-gray-200/50 rounded-full"></div>
             </div>
@@ -121,7 +121,7 @@
                 <InputText
                   id="email"
                   v-model="form.email"
-                  class="w-full !pl-4 !pr-4 !py-3 !bg-gray-50 !border-gray-200 !rounded-xl !text-gray-900 !text-sm hover:!border-[#D1A7B0] focus:!border-[#8A1538] focus:!bg-white !transition-all !duration-200"
+                  class="w-full !pl-4 !pr-4 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
                   :class="{ '!border-red-500': validationErrors.email || form.errors.email }"
                 />
                 <label for="email" class="text-gray-500">Correo Electrónico</label>
@@ -141,7 +141,7 @@
                   :feedback="false"
                   toggleMask
                   class="w-full"
-                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-gray-50 !border-gray-200 !rounded-xl !text-gray-900 !text-sm hover:!border-[#D1A7B0] focus:!border-[#8A1538] focus:!bg-white !transition-all !duration-200"
+                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
                   :class="{ '!border-red-500': validationErrors.password || form.errors.password }"
                 />
                 <label for="password" class="text-gray-500">Contraseña</label>
@@ -164,7 +164,7 @@
             <Button
               type="submit"
               label="INGRESAR AL SISTEMA"
-              class="w-full !bg-[#8A1538] hover:!bg-black !border-[#8A1538] hover:!border-black !text-white !font-medium !tracking-wide !py-3.5 !rounded-xl !shadow-lg !transition-all !duration-200 hover:!shadow-xl hover:!-translate-y-0.5 active:!translate-y-0"
+              class="w-full !bg-brand-red hover:!bg-black !border-brand-red hover:!border-black !text-white !font-medium !tracking-wide !py-3.5 !rounded-xl !shadow-lg !transition-all !duration-200 hover:!shadow-xl hover:!-translate-y-0.5 active:!translate-y-0"
               :loading="form.processing"
             />
           </form>
@@ -265,11 +265,11 @@ const submit = () => {
   100% { transform: rotate(360deg); }
 }
 
-/* Logo 3D Container - NUEVO */
+/* LOGO 3D Container */
 .logo-3d-container {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -278,7 +278,8 @@ const submit = () => {
 .logo-orbit {
   position: absolute;
   inset: 0;
-  border: 2px dashed rgba(138, 21, 56, 0.2);
+  border: 2px dashed var(--brand-red);
+  opacity: 0.2;
   border-radius: 50%;
   animation: orbit 20s linear infinite;
 }
@@ -290,34 +291,34 @@ const submit = () => {
   left: 50%;
   width: 8px;
   height: 8px;
-  background: #8A1538;
+  background: var(--brand-red);
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 10px #8A1538;
+  box-shadow: 0 0 10px var(--brand-red);
 }
 
 .logo-3d {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
-  filter: drop-shadow(0 10px 30px rgba(138, 21, 56, 0.3));
+  filter: drop-shadow(0 15px 40px var(--brand-red));
+  opacity: 1;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo-3d-container:hover .logo-3d {
-  transform: scale(1.1) rotateY(10deg);
-  filter: drop-shadow(0 15px 40px rgba(138, 21, 56, 0.5));
+  transform: scale(1.05) rotateY(10deg);
+  filter: drop-shadow(0 20px 50px var(--brand-red));
 }
 
-/* TUS ESTILOS ORIGINALES */
-:deep(.p-inputtext:enabled:focus) { box-shadow: 0 0 0 3px rgba(138, 21, 56, 0.1); }
-:deep(.p-checkbox-box.p-highlight) { background: #8A1538; border-color: #8A1538; }
+:deep(.p-inputtext:enabled:focus) { box-shadow: 0 0 0 3px var(--brand-red); }
+:deep(.p-checkbox-box.p-highlight) { background: var(--brand-red); border-color: var(--brand-red); }
 :deep(.p-password input) { width: 100%; }
 :deep(.p-float-label label) { margin-left: 0.5rem; color: #6b7280; }
 :deep(.p-inputtext:focus ~ label),
 :deep(.p-inputtext.p-filled ~ label) {
   background-color: transparent;
-  color: #8A1538;
+  color: var(--brand-red);
   font-weight: 600;
   transition: color 0.3s ease;
 }

@@ -1,11 +1,17 @@
 <template>
-  <header class="bg-white/90 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-30 transition-all duration-300 shadow-sm">
+  <header 
+    class="backdrop-blur-2xl border-b border-brand-red/20 sticky top-0 z-30 transition-all duration-300 shadow-sm rounded-b-2xl overflow-hidden"
+    :style="{
+      backgroundColor: 'var(--navbar-bg)',
+      backgroundImage: 'var(--navbar-gradient)'
+    }"
+  >
     <div class="w-full px-6 py-3.5 flex items-center justify-between">
       <!-- Left: menu + brand -->
       <div class="flex items-center gap-4">
         <Button
           v-if="isMobile"
-          class="lg:hidden !p-0 !w-10 !h-10 text-gray-500 hover:text-[#8A1538] hover:bg-[#8A1538]/10 transition-all duration-300 rounded-xl"
+          class="lg:hidden !p-0 !w-10 !h-10 text-gray-500 hover:text-brand-red hover:bg-brand-red/10 transition-all duration-300 rounded-xl"
           icon="pi pi-bars"
           text
           rounded
@@ -27,7 +33,7 @@
           :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
           text
           rounded
-          class="!p-0 !w-10 !h-10 text-gray-400 dark:text-gray-400 hover:text-[#8A1538] hover:bg-[#8A1538]/10 transition-all duration-300 rounded-xl"
+          class="!p-0 !w-10 !h-10 text-gray-400 dark:text-gray-400 hover:text-brand-red hover:bg-brand-red/10 transition-all duration-300 rounded-xl"
           :aria-label="isDark ? 'Modo claro' : 'Modo oscuro'"
           @click="toggleDark"
         />
@@ -38,11 +44,11 @@
         <!-- User Profile -->
         <div class="flex items-center gap-3 pl-1">
           <div class="relative group">
-            <div class="absolute inset-0 bg-gradient-to-br from-[#8A1538] to-[#D1A7B0] rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-red to-rose-400 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
             <Avatar 
               :label="initial" 
               shape="circle" 
-              class="!bg-gradient-to-br !from-[#8A1538] !to-[#a01a45] !text-white !font-bold shadow-lg shadow-[#8A1538]/20 border-2 border-white dark:border-gray-800 !w-10 !h-10 relative z-10 transition-transform duration-300 group-hover:scale-105" 
+              class="!bg-gradient-to-br !from-brand-red !to-rose-600 !text-white !font-bold shadow-lg shadow-brand-red/20 border-2 border-white dark:border-gray-800 !w-10 !h-10 relative z-10 transition-transform duration-300 group-hover:scale-105" 
             />
             <!-- Online Indicator -->
             <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full z-20">
