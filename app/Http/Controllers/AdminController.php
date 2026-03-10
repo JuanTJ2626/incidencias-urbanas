@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Incidencias;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\IncidenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -12,27 +13,25 @@ use Inertia\Inertia;
 
 class AdminController extends Controller
 {
+    public function __construct(private IncidenciaService $incidenciaService) {}
+
     /**
      * Dashboard principal del administrador
-     * Muestra lista de usuarios con sus roles
      */
     public function dashboard()
     {
-        $users = User::all()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'rol' => $user->rol,
-                'created_at' => $user->created_at->format('d/m/Y'),
-            ];
-        });
-
-        $roles = Role::all();
+        $users = User::all()->map(fn($u) => [
+            'id'         => $u->id,
+            'name'       => $u->name,
+            'email'      => $u->email,
+            'rol'        => $u->rol,
+            'created_at' => $u->created_at->format('d/m/Y'),
+        ]);
 
         return Inertia::render('admin/Dashboard', [
-            'users' => $users,
-            'roles' => $roles,
+            'users'       => $users,
+            'roles'       => Role::all(),
+            'incidencias' => $this->incidenciaService->listar(),
         ]);
     }
 
@@ -135,6 +134,25 @@ class AdminController extends Controller
     }
 
     /**
+     * Eliminar múltiples usuarios a la vez
+     */
+    public function bulkDeleteUsers(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:users,id'
+        ]);
+
+        $ids = $request->ids;
+        // Evitar que el admin se borre a sí mismo en lote si por error se seleccionó
+        $ids = array_filter($ids, fn($id) => $id != auth()->id());
+
+        User::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Usuarios eliminados correctamente.');
+    }
+
+    /**
      * Renderiza la vista de Gestión de Usuarios
      */
     public function usersView()
@@ -185,32 +203,9 @@ class AdminController extends Controller
      */
     public function gestionIncidencias()
     {
-        $incidencias = Incidencias::with('trabajador')->orderBy('created_at', 'desc')->get()->map(function ($inc) {
-            return [
-                'id'               => $inc->id,
-                'nombre_ciudadano' => $inc->nombre_ciudadano,
-                'email'            => $inc->email,
-                'direccion'        => $inc->direccion,
-                'tipo_incidencia'  => $inc->tipo_incidencia,
-                'descripcion'      => $inc->descripcion,
-                'estatus'          => $inc->estatus,
-                'foto'             => $inc->foto,
-                'latitud'          => $inc->latitud  ? (float) $inc->latitud  : null,
-                'longitud'         => $inc->longitud ? (float) $inc->longitud : null,
-                'asignado_a'       => $inc->asignado_a,
-                'trabajador_nombre'=> $inc->trabajador?->name,
-                'created_at'       => $inc->created_at?->format('d/m/Y H:i'),
-            ];
-        });
-
-        $trabajadores = User::whereIn('rol', ['trabajador', 'contratista', 'worker'])
-            ->where('activo', true)
-            ->select('id', 'name', 'email', 'rol')
-            ->get();
-
         return Inertia::render('admin/GestionIncidencias', [
-            'incidencias'  => $incidencias,
-            'trabajadores' => $trabajadores,
+            'incidencias'  => $this->incidenciaService->listar(),
+            'trabajadores' => $this->incidenciaService->trabajadoresDisponibles(),
         ]);
     }
 
@@ -231,11 +226,8 @@ class AdminController extends Controller
             'foto'             => 'nullable|image|max:5120',
         ]);
 
-        if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('incidencias', 'public');
-        }
+        $this->incidenciaService->crear($data, $request->file('foto'));
 
-        Incidencias::create($data);
         return back()->with('success', 'Incidencia creada correctamente.');
     }
 
@@ -244,8 +236,6 @@ class AdminController extends Controller
      */
     public function updateIncidencia(Request $request, $id)
     {
-        $inc = Incidencias::findOrFail($id);
-
         $data = $request->validate([
             'nombre_ciudadano' => 'required|string|max:255',
             'email'            => 'nullable|email|max:255',
@@ -258,14 +248,24 @@ class AdminController extends Controller
             'foto'             => 'nullable|image|max:5120',
         ]);
 
-        if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('incidencias', 'public');
-        } else {
-            unset($data['foto']);
-        }
+        $this->incidenciaService->actualizar((int) $id, $data, $request->file('foto'));
 
-        $inc->update($data);
         return back()->with('success', 'Incidencia actualizada correctamente.');
+    }
+
+    /**
+     * Eliminar múltiples incidencias a la vez
+     */
+    public function bulkDeleteIncidencias(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:incidencias,id'
+        ]);
+
+        Incidencias::whereIn('id', $request->ids)->delete();
+
+        return response()->json(['message' => 'Incidencias eliminadas correctamente.']);
     }
 
     /**
@@ -273,26 +273,30 @@ class AdminController extends Controller
      */
     public function destroyIncidencia($id)
     {
-        Incidencias::findOrFail($id)->delete();
-        return back()->with('success', 'Incidencia eliminada.');
+        $this->incidenciaService->eliminar((int) $id);
+
+        return response()->json(['message' => 'Incidencia eliminada correctamente.']);
     }
 
     /**
-     * Cambiar el estatus de una incidencia (no permite poner 'resuelto' directamente;
-     * ese estado solo lo genera revisarCierre).
+     * Cambia el estatus de una incidencia según el flujo de negocio.
+     * Delega toda la lógica a IncidenciaService.
      */
     public function cambiarEstatus(Request $request, $id)
     {
         $request->validate(['estatus' => 'required|string']);
-        $incidencia = Incidencias::findOrFail($id);
-        $incidencia->update(['estatus' => $request->estatus]);
-        return back()->with('success', 'Estatus actualizado.');
+
+        try {
+            $result = $this->incidenciaService->cambiarEstatus((int) $id, $request->estatus);
+            return response()->json($result);
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+        }
     }
 
     /**
-     * Revisar el cierre enviado por el trabajador.
-     * accion = 'aprobar'  → estatus resuelto
-     * accion = 'rechazar' → estatus en proceso + guarda motivo_rechazo
+     * Revisa la evidencia de cierre enviada por el trabajador.
+     * Delega toda la lógica a IncidenciaService.
      */
     public function revisarCierre(Request $request, $id)
     {
@@ -301,49 +305,43 @@ class AdminController extends Controller
             'motivo_rechazo' => 'required_if:accion,rechazar|nullable|string|max:500',
         ]);
 
-        $inc = Incidencias::findOrFail($id);
-
-        if ($request->accion === 'aprobar') {
-            $inc->update([
-                'estatus'        => 'resuelto',
-                'motivo_rechazo' => null,
-            ]);
-            return back()->with('success', 'Orden aprobada como resuelta.');
+        try {
+            $result = $this->incidenciaService->revisarCierre(
+                (int) $id,
+                $request->accion,
+                $request->motivo_rechazo
+            );
+            return response()->json($result);
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        // rechazar → vuelve a en proceso para que el trabajador corrija
-        $inc->update([
-            'estatus'        => 'en proceso',
-            'motivo_rechazo' => $request->motivo_rechazo,
-            'foto_despues'   => null,
-            'cerrado_en'     => null,
-        ]);
-        return back()->with('success', 'Orden rechazada. El trabajador deberá corregir.');;
     }
 
     /**
-     * Asignar un trabajador a una incidencia (genera la orden de trabajo)
+     * Asigna un trabajador a una incidencia.
+     * Delega toda la lógica a IncidenciaService.
      */
     public function asignarTrabajador(Request $request, $id)
     {
         $request->validate([
             'asignado_a' => 'required|exists:users,id',
         ]);
-        $incidencia = Incidencias::findOrFail($id);
-        $incidencia->update([
-            'asignado_a' => $request->asignado_a,
-            'estatus'    => 'en proceso',
-        ]);
-        return back()->with('success', 'Trabajador asignado correctamente.');
+
+        try {
+            $result = $this->incidenciaService->asignarTrabajador((int) $id, (int) $request->asignado_a);
+            return response()->json($result);
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+        }
     }
 
-    /**
     /**
      * Mapa de calor: todas las incidencias con coords para Google Maps
      */
     public function mapaCalor()
     {
-        $incidencias = Incidencias::orderBy('created_at', 'desc')
+        $incidencias = Incidencias::with('trabajador')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($inc) => [
                 'id'               => $inc->id,
@@ -351,15 +349,28 @@ class AdminController extends Controller
                 'descripcion'      => $inc->descripcion,
                 'direccion'        => $inc->direccion,
                 'estatus'          => $inc->estatus,
+                'email'            => $inc->email,
                 'foto'             => $inc->foto,
+                'foto_despues'     => $inc->foto_despues,
                 'latitud'          => $inc->latitud  ? (float) $inc->latitud  : null,
                 'longitud'         => $inc->longitud ? (float) $inc->longitud : null,
+                'lat_cierre'       => $inc->lat_cierre ? (float) $inc->lat_cierre : null,
+                'lng_cierre'       => $inc->lng_cierre ? (float) $inc->lng_cierre : null,
                 'nombre_ciudadano' => $inc->nombre_ciudadano,
+                'asignado_a'       => $inc->asignado_a,
+                'trabajador_nombre'=> $inc->trabajador?->name,
+                'trabajador_email' => $inc->trabajador?->email,
+                'notas_cierre'     => $inc->notas_cierre,
+                'motivo_rechazo'   => $inc->motivo_rechazo,
+                'cerrado_en'       => $inc->cerrado_en?->format('d/m/Y H:i'),
                 'created_at'       => $inc->created_at?->format('d/m/Y H:i'),
             ]);
 
+        $trabajadores = $this->incidenciaService->trabajadoresDisponibles();
+
         return Inertia::render('admin/Mapa', [
-            'incidencias' => $incidencias,
+            'incidencias'  => $incidencias,
+            'trabajadores' => $trabajadores,
         ]);
     }
 
@@ -394,6 +405,18 @@ class AdminController extends Controller
 
         return Inertia::render('admin/Monitoreo', [
             'incidencias' => $incidencias,
+        ]);
+    }
+
+    /**
+     * Dashboard de Gráficas: Estadísticas avanzadas y reportes descargables
+     */
+    public function graficas()
+    {
+        return Inertia::render('admin/DashboardGraficas', [
+            'incidencias' => $this->incidenciaService->listar(),
+            'totalUsers'  => User::count(),
+            'userStats'   => User::selectRaw('rol, count(*) as total')->groupBy('rol')->get(),
         ]);
     }
 }

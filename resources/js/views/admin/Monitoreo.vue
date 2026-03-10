@@ -14,10 +14,10 @@
         :key="inc.id"
         @click="abrirRevision(inc)"
         :class="[
-          'group relative bg-white rounded-2xl border overflow-hidden flex flex-col transition-all duration-200',
+          'group relative bg-white dark:bg-app-card rounded-2xl border overflow-hidden flex flex-col transition-all duration-200',
           inc.estatus === 'en revisión'
-            ? 'border-amber-300 shadow-amber-100 shadow-md cursor-pointer hover:shadow-amber-200 hover:shadow-lg hover:-translate-y-0.5'
-            : 'border-[#E8E8ED] shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5'
+            ? 'border-amber-300 dark:border-amber-500/50 shadow-amber-100 dark:shadow-amber-900/10 shadow-md cursor-pointer hover:shadow-amber-200 dark:hover:shadow-amber-900/20 hover:-translate-y-0.5'
+            : 'border-app-border dark:border-app-border shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5'
         ]"
       >
         <!-- Banner "en revisión" -->
@@ -27,14 +27,14 @@
         </div>
 
         <!-- Foto antes -->
-        <div class="relative h-44 bg-[#F5F5F7] overflow-hidden">
+        <div class="relative h-44 bg-app-secondary dark:bg-app-secondary overflow-hidden">
           <img
             v-if="inc.foto"
             :src="`/storage/${inc.foto}`"
             class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
           />
           <div v-else class="h-full flex items-center justify-center">
-            <i class="pi pi-image text-4xl text-gray-300"></i>
+            <i class="pi pi-image text-4xl text-gray-300 dark:text-gray-600"></i>
           </div>
 
           <!-- Badge estatus -->
@@ -52,31 +52,31 @@
         <!-- Cuerpo -->
         <div class="p-4 flex flex-col flex-1 gap-2">
           <div>
-            <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest">{{ inc.tipo_incidencia }}</p>
-            <p class="text-sm font-bold text-[#1D1D1F] mt-0.5 leading-snug line-clamp-2">{{ inc.direccion }}</p>
+            <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest">{{ inc.tipo_incidencia }}</p>
+            <p class="text-sm font-bold text-[#1D1D1F] dark:text-white mt-0.5 leading-snug line-clamp-2">{{ inc.direccion }}</p>
           </div>
 
           <!-- Worker -->
-          <div class="mt-auto pt-3 border-t border-[#F5F5F7] flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-[#1D1D1F] flex items-center justify-center text-white text-[11px] font-black shrink-0">
+          <div class="mt-auto pt-3 border-t border-app-secondary dark:border-app-border flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full bg-[#1D1D1F] dark:bg-white dark:text-black flex items-center justify-center text-white text-[11px] font-black shrink-0">
               {{ (inc.trabajador_nombre || 'T').charAt(0).toUpperCase() }}
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-semibold text-[#1D1D1F] truncate">{{ inc.trabajador_nombre || 'Sin asignar' }}</p>
-              <p class="text-[10px] text-[#86868B] truncate">{{ inc.trabajador_email || '' }}</p>
+              <p class="text-xs font-semibold text-[#1D1D1F] dark:text-gray-200 truncate">{{ inc.trabajador_nombre || 'Sin asignar' }}</p>
+              <p class="text-[10px] text-[#86868B] dark:text-[#A1A1A6] truncate">{{ inc.trabajador_email || '' }}</p>
             </div>
-            <span class="text-[10px] text-gray-400 shrink-0 font-mono">#{{ inc.id }}</span>
+            <span class="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 font-mono">#{{ inc.id }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Vacío -->
-    <div v-else class="bg-white rounded-2xl p-12 text-center border border-[#E8E8ED]">
-      <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="pi pi-eye text-4xl text-gray-300"></i>
+    <div v-else class="bg-white dark:bg-[#18181b] rounded-2xl p-12 text-center border border-[#E8E8ED] dark:border-white/10">
+      <div class="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="pi pi-eye text-4xl text-gray-300 dark:text-gray-600"></i>
       </div>
-      <p class="text-gray-500 font-medium">Aún no hay incidencias asignadas a trabajadores.</p>
+      <p class="text-gray-500 dark:text-gray-400 font-medium">Aún no hay incidencias asignadas a trabajadores.</p>
     </div>
 
     <!-- ================================================================
@@ -95,16 +95,16 @@
         <!-- Dirección + worker -->
         <div class="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p class="text-sm font-bold text-[#1D1D1F]">{{ dialogInc.direccion }}</p>
-            <p class="text-xs text-[#86868B] mt-0.5">{{ dialogInc.descripcion }}</p>
+            <p class="text-sm font-bold text-[#1D1D1F] dark:text-white">{{ dialogInc.direccion }}</p>
+            <p class="text-xs text-[#86868B] dark:text-[#A1A1A6] mt-0.5">{{ dialogInc.descripcion }}</p>
           </div>
-          <div class="flex items-center gap-2 bg-[#F5F5F7] rounded-xl px-3 py-1.5 shrink-0">
-            <div class="w-6 h-6 rounded-full bg-[#1D1D1F] flex items-center justify-center text-white text-[10px] font-black">
+          <div class="flex items-center gap-2 bg-[#F5F5F7] dark:bg-white/5 rounded-xl px-3 py-1.5 shrink-0">
+            <div class="w-6 h-6 rounded-full bg-[#1D1D1F] dark:bg-white dark:text-black flex items-center justify-center text-white text-[10px] font-black">
               {{ (dialogInc.trabajador_nombre || 'T').charAt(0).toUpperCase() }}
             </div>
             <div>
-              <p class="text-xs font-bold text-[#1D1D1F]">{{ dialogInc.trabajador_nombre || '—' }}</p>
-              <p class="text-[10px] text-[#86868B]">{{ dialogInc.trabajador_email }}</p>
+              <p class="text-xs font-bold text-[#1D1D1F] dark:text-gray-200">{{ dialogInc.trabajador_nombre || '—' }}</p>
+              <p class="text-[10px] text-[#86868B] dark:text-[#A1A1A6]">{{ dialogInc.trabajador_email }}</p>
             </div>
           </div>
         </div>
@@ -112,22 +112,22 @@
         <!-- Fotos antes / después -->
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest flex items-center gap-1">
+            <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-image"></i> Foto ANTES (original)
             </p>
-            <div class="h-52 bg-[#F5F5F7] rounded-xl overflow-hidden border border-[#E8E8ED]">
+            <div class="h-52 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-xl overflow-hidden border border-[#E8E8ED] dark:border-white/5">
               <img v-if="dialogInc.foto" :src="`/storage/${dialogInc.foto}`" class="w-full h-full object-cover" />
-              <div v-else class="h-full flex items-center justify-center text-gray-300 text-sm">Sin foto</div>
+              <div v-else class="h-full flex items-center justify-center text-gray-300 dark:text-gray-600 text-sm">Sin foto</div>
             </div>
           </div>
 
           <div class="flex flex-col gap-2">
-            <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest flex items-center gap-1">
+            <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-camera"></i> Foto DESPUÉS (evidencia del trabajador)
             </p>
-            <div class="h-52 bg-[#F5F5F7] rounded-xl overflow-hidden border border-[#E8E8ED]">
+            <div class="h-52 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-xl overflow-hidden border border-[#E8E8ED] dark:border-white/5">
               <img v-if="dialogInc.foto_despues" :src="`/storage/${dialogInc.foto_despues}`" class="w-full h-full object-cover" />
-              <div v-else class="h-full flex flex-col items-center justify-center text-gray-300 gap-1">
+              <div v-else class="h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 gap-1">
                 <i class="pi pi-camera text-3xl"></i>
                 <p class="text-xs">Sin evidencia aún</p>
               </div>
@@ -138,21 +138,21 @@
         <!-- Mapa cierre + notas -->
         <div v-if="dialogInc.lat_cierre && dialogInc.lng_cierre" class="grid grid-cols-5 gap-4">
           <div class="col-span-3 flex flex-col gap-2">
-            <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest flex items-center gap-1">
+            <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-map-marker"></i> Ubicación de cierre (GPS)
             </p>
-            <div class="h-44 rounded-xl overflow-hidden border border-[#E8E8ED]">
+            <div class="h-44 rounded-xl overflow-hidden border border-[#E8E8ED] dark:border-white/5">
               <iframe
-                :src="`https://www.openstreetmap.org/export/embed.html?bbox=${dialogInc.lng_cierre-0.005},${dialogInc.lat_cierre-0.005},${dialogInc.lng_cierre+0.005},${dialogInc.lat_cierre+0.005}&layer=mapnik&marker=${dialogInc.lat_cierre},${dialogInc.lng_cierre}`"
-                width="100%" height="100%" style="border:0" loading="lazy"
+                :src="`https://www.google.com/maps/embed/v1/place?key=AIzaSyCchiqlRlOnv6C4pXxh59tYDMRiK501Tmc&q=${dialogInc.lat_cierre},${dialogInc.lng_cierre}&zoom=17`"
+                width="100%" height="100%" style="border:0" loading="lazy" allowfullscreen
               ></iframe>
             </div>
           </div>
           <div class="col-span-2 flex flex-col gap-2">
-            <p class="text-[10px] font-black text-[#86868B] uppercase tracking-widest flex items-center gap-1">
+            <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-align-left"></i> Notas del cierre
             </p>
-            <div class="h-44 bg-[#F5F5F7] rounded-xl border border-[#E8E8ED] p-3 overflow-y-auto text-sm text-[#1D1D1F] leading-relaxed">
+            <div class="h-44 bg-app-secondary dark:bg-app-bg rounded-xl border border-app-border dark:border-app-border p-3 overflow-y-auto text-sm text-[#1D1D1F] dark:text-gray-200 leading-relaxed">
               {{ dialogInc.notas_cierre || 'Sin notas.' }}
             </div>
           </div>
@@ -160,25 +160,25 @@
 
         <!-- Zona de decisión — solo si está en revisión y tiene foto después -->
         <template v-if="dialogInc.estatus === 'en revisión'">
-          <div class="border-t border-[#E8E8ED] pt-4 flex flex-col gap-3">
-            <p class="text-xs font-black text-[#1D1D1F] uppercase tracking-wide flex items-center gap-1.5">
+          <div class="border-t border-[#E8E8ED] dark:border-white/5 pt-4 flex flex-col gap-3">
+            <p class="text-xs font-black text-[#1D1D1F] dark:text-white uppercase tracking-wide flex items-center gap-1.5">
               <i class="pi pi-shield text-amber-500"></i> Decisión del administrador
             </p>
 
-            <div v-if="!dialogInc.foto_despues" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
+            <div v-if="!dialogInc.foto_despues" class="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
               <i class="pi pi-info-circle"></i> El trabajador aún no ha enviado evidencia.
             </div>
 
             <template v-else>
               <div v-if="mostrarMotivo" class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-rose-600 flex items-center gap-1">
+                <label class="text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1">
                   <i class="pi pi-comment"></i> Motivo del rechazo <span class="text-rose-500">*</span>
                 </label>
                 <Textarea
                   v-model="motivoRechazo"
                   :rows="3"
                   placeholder="Explica al trabajador qué debe corregir..."
-                  class="w-full text-sm resize-none"
+                  class="w-full text-sm resize-none dark:bg-app-bg dark:text-white dark:border-app-border"
                 />
                 <p v-if="rechazoError" class="text-xs text-rose-500">{{ rechazoError }}</p>
               </div>
@@ -188,26 +188,26 @@
                   v-if="!mostrarMotivo"
                   @click="aprobarCierre"
                   :disabled="procesando"
-                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition disabled:opacity-50 shadow-sm"
+                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 dark:bg-emerald-600 text-white hover:bg-emerald-600 transition disabled:opacity-50 shadow-sm"
                 ><i class="pi pi-check-circle"></i> Aprobar — marcar como resuelta</button>
 
                 <button
                   v-if="!mostrarMotivo"
                   @click="mostrarMotivo = true"
                   :disabled="procesando"
-                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition disabled:opacity-50"
+                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition disabled:opacity-50"
                 ><i class="pi pi-times-circle"></i> Rechazar con motivo</button>
 
                 <template v-if="mostrarMotivo">
                   <button
                     @click="confirmarRechazo"
                     :disabled="procesando || !motivoRechazo.trim()"
-                    class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-rose-500 text-white hover:bg-rose-600 transition disabled:opacity-50"
+                    class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-rose-500 dark:bg-rose-600 text-white hover:bg-rose-600 transition disabled:opacity-50"
                   ><i class="pi pi-times"></i> Confirmar rechazo</button>
                   <button
                     @click="mostrarMotivo = false; motivoRechazo = ''"
                     :disabled="procesando"
-                    class="px-4 py-2.5 rounded-xl text-sm font-bold border border-[#E8E8ED] text-[#86868B] hover:bg-gray-50 transition"
+                    class="px-4 py-2.5 rounded-xl text-sm font-bold border border-app-border dark:border-app-border text-[#86868B] dark:text-[#A1A1A6] hover:bg-gray-50 dark:hover:bg-white/5 transition"
                   >Cancelar</button>
                 </template>
               </div>
@@ -216,7 +216,7 @@
         </template>
 
         <!-- Ya resuelta -->
-        <div v-else-if="dialogInc.estatus === 'resuelto'" class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-700 flex items-center gap-2 font-semibold">
+        <div v-else-if="dialogInc.estatus === 'resuelto'" class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400 flex items-center gap-2 font-semibold">
           <i class="pi pi-verified"></i> Esta incidencia fue aprobada como resuelta.
         </div>
       </div>
@@ -310,4 +310,19 @@ export default {
 <style scoped>
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 .animate-fade-in { animation: fadeIn .35s ease-out forwards }
+
+:global(.dark) :deep(.p-dialog) {
+	background-color: #1C1C1E !important;
+	border: 1px solid rgba(255, 255, 255, 0.1) !important;
+	color: #EBEBF5 !important;
+}
+:global(.dark) :deep(.p-dialog .p-dialog-header) {
+	background-color: #1C1C1E !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+	color: white !important;
+}
+:global(.dark) :deep(.p-dialog .p-dialog-content) {
+	background-color: #1C1C1E !important;
+	color: #EBEBF5 !important;
+}
 </style>

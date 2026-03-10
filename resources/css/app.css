@@ -1,4 +1,425 @@
 @import "tailwindcss";
 
-/* Dark mode class-based (Tailwind CSS v4) */
+/* 
+   ==========================================================================
+   CONFIGURACIÓN DE COLORES PARA PERSONALIZACIÓN RÁPIDA 
+   ==========================================================================
+*/
+
+:root {
+    /* ── MODO CLARO (Edita aquí tus colores base) ── */
+    --brand-red: #8A1538;
+    /* Guinda principal */
+    --brand-red-light: #A82240;
+    --brand-red-dark: #630F28;
+
+    --app-bg: #F5F5F7;
+    --app-bg-gradient: linear-gradient(0deg, #E2E2E7 0%, #F5F5F7 100%);
+    /* Fondo suave para que resalte lo blanco */
+    --app-card: #FFFFFF;
+
+    /* ── ELEMENTOS DE NAVEGACIÓN (Edita aquí) ── */
+    --sidebar-bg: #FFFFFF;
+    /* Sidebar Blanco */
+    --navbar-bg: #FFFFFF;
+    /* Navbar Blanco */
+    --sidebar-gradient: none;
+    --navbar-gradient: none;
+
+    --app-border: rgba(0, 0, 0, 0.08);
+    --app-secondary: #E5E5EA;
+    --app-text: #1D1D1F;
+    --app-text-light: #86868B;
+
+    /* Gradients para marca */
+    --bg-brand-gradient: linear-gradient(135deg, #8A1538 0%, #A82240 100%);
+    --text-brand-gradient: linear-gradient(135deg, #8A1538 0%, #630F28 100%);
+}
+
+.dark {
+    /* ── MODO OSCURO (Noche Profunda) ── */
+    --app-bg: #000000;
+    --app-bg-gradient: linear-gradient(0deg, #3D0A19 0%, #000000 100%);
+    --app-card: #1C1C1E;
+
+    /* Navegación Dark */
+    --sidebar-bg: #000000;
+    --sidebar-gradient: linear-gradient(0deg, #3D0A19 0%, #000000 100%);
+    --navbar-bg: rgba(0, 0, 0, 0.8);
+    --navbar-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(61, 10, 25, 0.2) 100%);
+
+    --app-border: rgba(255, 255, 255, 0.12);
+    --app-secondary: #2C2C2E;
+    --app-text: #FFFFFF;
+    --app-text-light: #A1A1A6;
+
+    --brand-red: #A82240;
+    --bg-brand-gradient: linear-gradient(135deg, #A82240 0%, #8A1538 100%);
+}
+
+@theme {
+    /* Vinculación de variables CSS con el motor de Tailwind v4 */
+    --color-brand-red: var(--brand-red);
+    --color-app-bg: var(--app-bg);
+    --color-app-card: var(--app-card);
+    --color-app-border: var(--app-border);
+    --color-app-secondary: var(--app-secondary);
+    --color-app-text: var(--app-text);
+    --color-app-text-light: var(--app-text-light);
+}
+
+/* ─── UTILIDADES PREMIUM ─── */
+
+.bg-brand-gradient {
+    background: var(--bg-brand-gradient);
+}
+
+.text-brand-gradient {
+    background: var(--text-brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.glass-effect {
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+}
+
+.app-card-elevated {
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.04);
+}
+
+.dark .app-card-elevated {
+    box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── RESET & BASE ─── */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: var(--app-bg-gradient);
+    background-attachment: fixed;
+    color: var(--app-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── MESH GRADIENT ANIMADO (Fondo Premium) ─── */
+@keyframes meshMove {
+
+    0%,
+    100% {
+        transform: translate(0%, 0%) scale(1);
+    }
+
+    25% {
+        transform: translate(5%, -3%) scale(1.05);
+    }
+
+    50% {
+        transform: translate(-3%, 5%) scale(0.95);
+    }
+
+    75% {
+        transform: translate(3%, 3%) scale(1.02);
+    }
+}
+
+.mesh-gradient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.mesh-gradient-bg::before,
+.mesh-gradient-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.07;
+    animation: meshMove 20s ease-in-out infinite;
+}
+
+.mesh-gradient-bg::before {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--brand-red) 0%, transparent 70%);
+    top: -10%;
+    right: -5%;
+    animation-delay: -5s;
+}
+
+.mesh-gradient-bg::after {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+    bottom: -10%;
+    left: -5%;
+    animation-delay: -10s;
+}
+
+.mesh-gradient-bg .mesh-orb-3 {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #10b981 0%, transparent 70%);
+    filter: blur(120px);
+    opacity: 0.05;
+    top: 40%;
+    left: 30%;
+    animation: meshMove 25s ease-in-out infinite;
+    animation-delay: -15s;
+}
+
+.dark .mesh-gradient-bg::before,
+.dark .mesh-gradient-bg::after {
+    opacity: 0.12;
+}
+
+.dark .mesh-gradient-bg .mesh-orb-3 {
+    opacity: 0.08;
+}
+
+/* ─── SKELETON LOADER (Estados de Carga Premium) ─── */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--app-secondary) 25%,
+            rgba(255, 255, 255, 0.3) 50%,
+            var(--app-secondary) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: 0.75rem;
+}
+
+.dark .skeleton {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.05) 25%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0.05) 75%);
+    background-size: 200% 100%;
+}
+
+.skeleton-text {
+    height: 14px;
+    margin-bottom: 8px;
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 60%;
+    margin-bottom: 12px;
+}
+
+.skeleton-chart {
+    height: 200px;
+}
+
+.skeleton-card {
+    height: 120px;
+}
+
+/* ─── MICRO-ANIMACIONES PARA ICONOS ─── */
+@keyframes iconBounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+@keyframes iconWiggle {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-8deg);
+    }
+
+    75% {
+        transform: rotate(8deg);
+    }
+}
+
+@keyframes iconPulseGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 0px transparent);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 8px var(--brand-red));
+    }
+}
+
+.icon-interactive {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+.icon-interactive:hover {
+    animation: iconBounce 0.5s ease;
+    color: var(--brand-red);
+}
+
+.icon-wiggle:hover {
+    animation: iconWiggle 0.4s ease;
+}
+
+.icon-glow:hover {
+    animation: iconPulseGlow 1s ease infinite;
+}
+
+/* Corrección de visibilidad para etiquetas globales */
+label {
+    color: var(--app-text);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+small,
+.text-secondary {
+    color: var(--app-text-light);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-red);
+}
+
+/* Tailwind v4 Dark Variant */
 @variant dark (&:where(.dark, .dark *));
+
+/* ─── GLOBAL PRIME VUE OVERRIDES ─── */
+
+/* Dialog / Modals */
+.p-dialog {
+    background: var(--app-card) !important;
+    border: 1px solid var(--app-border) !important;
+    border-radius: 1.5rem !important;
+    color: var(--app-text) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(15px);
+}
+
+.p-dialog .p-dialog-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--app-border) !important;
+    padding: 1.5rem 1.5rem 1rem 1.5rem !important;
+    color: var(--brand-red) !important;
+}
+
+.p-dialog .p-dialog-content {
+    background: transparent !important;
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem !important;
+    color: var(--app-text) !important;
+}
+
+.p-dialog .p-dialog-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--app-border) !important;
+    padding: 1rem 1.5rem !important;
+}
+
+/* Inputs, Dropdowns, Textareas */
+.p-inputtext,
+.p-dropdown,
+.p-textarea,
+.p-password input {
+    background: var(--app-card) !important;
+    border: 1px solid var(--app-border) !important;
+    border-radius: 0.8rem !important;
+    color: var(--app-text) !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Placeholder visibility */
+::placeholder {
+    color: var(--app-text-light) !important;
+    opacity: 0.6;
+}
+
+.p-inputtext:focus,
+.p-dropdown:focus,
+.p-textarea:focus {
+    border-color: var(--brand-red) !important;
+    box-shadow: 0 0 0 3px rgba(138, 21, 56, 0.15) !important;
+    background: var(--app-card) !important;
+}
+
+/* Dropdown Panel */
+.p-dropdown-panel {
+    background: var(--app-card) !important;
+    border: 1px solid var(--app-border) !important;
+    border-radius: 1.2rem !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    color: var(--app-text) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 0.7rem !important;
+    margin: 0.2rem !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+    background: var(--brand-red) !important;
+    color: white !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):hover {
+    background: var(--app-secondary) !important;
+}
+
+/* Bloques informativos (como los del modal) a blanco en light mode */
+.bg-app-secondary {
+    background-color: var(--app-card) !important;
+}
+
+.dark .bg-app-secondary {
+    background-color: var(--app-secondary) !important;
+}

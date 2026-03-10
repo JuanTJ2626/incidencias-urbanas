@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
     <div class="flex items-center gap-4">
-      <div v-if="icon" class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#850D12] to-[#F04A4B] flex items-center justify-center shadow-md">
+      <div v-if="icon" class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-rose-400 flex items-center justify-center shadow-md">
         <i :class="icon + ' text-white text-xl'"></i>
       </div>
       <div>

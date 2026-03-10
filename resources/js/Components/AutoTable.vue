@@ -1,38 +1,37 @@
-
 <template>
 
     <!-- Estado de Carga (Skeleton) -->
-    <div v-if="loading" class="p-4">
+    <div v-if="loading" class="p-4 bg-white dark:bg-app-card">
       <!-- Header Skeleton -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div class="flex items-center gap-3">
-          <Skeleton shape="circle" size="3rem" class="mr-2"></Skeleton>
+          <Skeleton shape="circle" size="3rem" class="mr-2 dark:bg-white/5"></Skeleton>
           <div>
-            <Skeleton width="10rem" class="mb-2"></Skeleton>
-            <Skeleton width="5rem"></Skeleton>
+            <Skeleton width="10rem" class="mb-2 dark:bg-white/5"></Skeleton>
+            <Skeleton width="5rem" class="dark:bg-white/5"></Skeleton>
           </div>
         </div>
-        <Skeleton width="15rem" height="2.5rem" borderRadius="16px"></Skeleton>
+        <Skeleton width="15rem" height="2.5rem" borderRadius="16px" class="dark:bg-white/5"></Skeleton>
       </div>
 
       <!-- Table Skeleton -->
-      <div class="border border-gray-100 rounded-xl overflow-hidden">
+      <div class="border border-gray-100 dark:border-app-border rounded-xl overflow-hidden">
         <!-- Cabecera Skeleton -->
-        <div class="flex bg-gray-50 p-4 border-b border-gray-100">
-          <Skeleton width="20%" height="1.5rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.5rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.5rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.5rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.5rem"></Skeleton>
+        <div class="flex bg-gray-50 dark:bg-app-secondary p-4 border-b border-gray-100 dark:border-app-border">
+          <Skeleton width="20%" height="1.5rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.5rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.5rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.5rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.5rem" class="dark:bg-white/5"></Skeleton>
         </div>
         
         <!-- Filas Skeleton -->
-        <div v-for="i in 5" :key="i" class="flex p-4 border-b border-gray-50 items-center">
-          <Skeleton width="20%" height="1.2rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.2rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="1.2rem" class="mr-4"></Skeleton>
-          <Skeleton width="20%" height="2rem" borderRadius="16px" class="mr-4"></Skeleton>
-          <Skeleton shape="circle" size="2.5rem"></Skeleton>
+        <div v-for="i in 5" :key="i" class="flex p-4 border-b border-gray-50 dark:border-app-border items-center">
+          <Skeleton width="20%" height="1.2rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.2rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="1.2rem" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton width="20%" height="2rem" borderRadius="16px" class="mr-4 dark:bg-white/5"></Skeleton>
+          <Skeleton shape="circle" size="2.5rem" class="dark:bg-white/5"></Skeleton>
         </div>
       </div>
     </div>
@@ -51,16 +50,16 @@
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
     >
       <template #header>
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-white/80 dark:bg-app-card/80 backdrop-blur-md border-b border-gray-100 dark:border-app-border">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-[#850D12] flex items-center justify-center shadow-lg" style="box-shadow: 0 10px 30px rgba(133,13,18,0.18);">
+            <div class="w-10 h-10 rounded-xl bg-brand-red flex items-center justify-center shadow-lg" style="box-shadow: 0 10px 30px rgba(133,13,18,0.18);">
               <i class="pi pi-table text-white text-lg"></i>
             </div>
             <div>
-              <h3 class="text-xl font-bold text-[#1D1D1F] m-0 tracking-tight">
+              <h3 class="text-xl font-bold text-[#1D1D1F] dark:text-white m-0 tracking-tight">
                 <slot name="title">Listado de Registros</slot>
               </h3>
-              <p class="text-sm text-[#86868B] m-0 mt-0.5 font-medium">Gestiona y visualiza la información</p>
+              <p class="text-sm text-[#86868B] dark:text-[#A1A1A6] m-0 mt-0.5 font-medium">Gestiona y visualiza la información</p>
             </div>
           </div>
           
@@ -68,11 +67,11 @@
             <!-- Slot para botones extra en el toolbar -->
             <slot name="toolbar" />
             <div class="relative group">
-              <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#850D12] transition-colors duration-300" />
+              <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-red dark:group-focus-within:text-brand-red transition-colors duration-300" />
               <InputText
                 v-model="globalFilter"
                 placeholder="Buscar en todos los campos..."
-                class="w-full sm:w-72 pl-11 pr-4 py-2.5 bg-gray-50/50 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#850D12]/20 focus:border-[#850D12] transition-all duration-300"
+                class="w-full sm:w-72 pl-11 pr-4 py-2.5 bg-gray-50/50 dark:bg-white/5 border-gray-200 dark:border-app-border rounded-xl text-sm dark:text-white focus:ring-2 focus:ring-brand-red/20 dark:focus:ring-white/10 focus:border-brand-red dark:focus:border-white/30 transition-all duration-300"
               />
             </div>
           </div>
@@ -81,9 +80,9 @@
 
       <template #paginatorleft>
             <div class="flex items-center gap-2 px-2">
-          <div class="w-2 h-2 rounded-full bg-[#850D12] animate-pulse"></div>
-          <span class="text-sm font-medium text-[#6B7280]">
-            Total: <span class="font-bold text-[#1D1D1F]">{{ totalCount }}</span> registros
+          <div class="w-2 h-2 rounded-full bg-brand-red animate-pulse"></div>
+          <span class="text-sm font-medium text-[#6B7280] dark:text-[#A1A1A6]">
+            Total: <span class="font-bold text-[#1D1D1F] dark:text-white">{{ totalCount }}</span> registros
           </span>
         </div>
       </template>
@@ -103,13 +102,13 @@
           <!-- Renderizado por defecto: foto -->
           <template v-else-if="isFotoField(col) && data[col]">
             <div class="relative group cursor-pointer w-fit">
-              <div class="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div class="absolute inset-0 bg-black/20 dark:bg-black/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <i class="pi pi-eye text-white"></i>
               </div>
               <img
                 :src="`/storage/${data[col]}`"
                 alt="Foto"
-                class="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100 transition-transform duration-300 group-hover:scale-105"
+                class="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100 dark:border-app-border transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           </template>
@@ -124,7 +123,7 @@
 
           <!-- Renderizado genérico -->
           <template v-else>
-            <span class="text-[15px] font-medium text-[#1D1D1F]">{{ formatCell(data[col]) }}</span>
+            <span class="text-[15px] font-medium text-[#1D1D1F] dark:text-gray-200">{{ formatCell(data[col]) }}</span>
           </template>
         </template>
       </Column>
@@ -138,11 +137,11 @@
 
       <template #empty>
         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
-          <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-            <i class="pi pi-folder-open text-4xl text-gray-300"></i>
+          <div class="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <i class="pi pi-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
           </div>
-          <h4 class="text-xl font-bold text-gray-800 mb-2">No se encontraron datos</h4>
-          <p class="text-gray-500 max-w-sm">Aún no hay registros disponibles para mostrar en esta tabla. Los nuevos datos aparecerán aquí.</p>
+          <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">No se encontraron datos</h4>
+          <p class="text-gray-500 dark:text-gray-400 max-w-sm">Aún no hay registros disponibles para mostrar en esta tabla. Los nuevos datos aparecerán aquí.</p>
         </div>
       </template>
     </DataTable>
@@ -227,16 +226,20 @@ function formatCell(val) {
 /** Clase CSS del badge de estatus */
 function getStatusBadgeClass(status) {
   const s = String(status ?? '').toLowerCase()
-  if (s.includes('pendiente') || s.includes('espera'))     return 'bg-amber-50 text-amber-600 border border-amber-200/50'
-  if (s.includes('resuelto')  || s.includes('completado') || s.includes('activo'))  return 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
-  if (s.includes('rechazado') || s.includes('cancelado')  || s.includes('inactivo')) return 'bg-rose-50 text-rose-600 border border-rose-200/50'
-  if (s.includes('proceso'))  return 'bg-sky-50 text-sky-600 border border-sky-200/50'
-  return 'bg-gray-50 text-gray-600 border border-gray-200/50'
+  if (s.includes('pendiente') || s.includes('espera'))     return 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/50'
+  if (s.includes('resuelto')  || s.includes('completado') || s.includes('activo'))  return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50'
+  if (s.includes('rechazado') || s.includes('cancelado')  || s.includes('inactivo')) return 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200/50'
+  if (s.includes('proceso'))  return 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-200/50'
+  return 'bg-gray-50 dark:bg-white/10 text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-app-border'
 }
 </script>
 
 <style scoped>
 /* Estilos Modernos y Limpios */
+:deep(.modern-datatable) {
+  background-color: transparent !important;
+}
+
 :deep(.modern-datatable .p-datatable-thead > tr > th) {
   background-color: #f8fafc;
   color: #64748b;
@@ -250,8 +253,18 @@ function getStatusBadgeClass(status) {
   transition: background-color 0.2s;
 }
 
+:global(.dark) :deep(.modern-datatable .p-datatable-thead > tr > th) {
+  background-color: var(--app-secondary) !important;
+  color: #a1a1a6 !important;
+  border-bottom-color: var(--app-border) !important;
+}
+
 :deep(.modern-datatable .p-datatable-thead > tr > th:hover) {
   background-color: #f1f5f9;
+}
+
+:global(.dark) :deep(.modern-datatable .p-datatable-thead > tr > th:hover) {
+  background-color: #3f3f46 !important;
 }
 
 :deep(.modern-datatable .p-datatable-tbody > tr) {
@@ -259,14 +272,26 @@ function getStatusBadgeClass(status) {
   transition: all 0.2s ease;
 }
 
+:global(.dark) :deep(.modern-datatable .p-datatable-tbody > tr) {
+  background-color: var(--app-card) !important;
+  color: #ebebf5 !important;
+}
+
 :deep(.modern-datatable .p-datatable-tbody > tr:hover) {
   background-color: #f8fafc !important;
-  /* Removed translate and shadow for a flat hover effect */
+}
+
+:global(.dark) :deep(.modern-datatable .p-datatable-tbody > tr:hover) {
+  background-color: var(--app-secondary) !important;
 }
 
 :deep(.modern-datatable .p-datatable-tbody > tr > td) {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #f1f5f9;
+}
+
+:global(.dark) :deep(.modern-datatable .p-datatable-tbody > tr > td) {
+  border-bottom-color: var(--app-border) !important;
 }
 
 /* Paginador Moderno */
@@ -276,6 +301,11 @@ function getStatusBadgeClass(status) {
   padding: 1.25rem;
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
+}
+
+:global(.dark) :deep(.modern-datatable .p-paginator) {
+  background-color: var(--app-card) !important;
+  border-top-color: var(--app-border) !important;
 }
 
 :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page) {
@@ -288,9 +318,18 @@ function getStatusBadgeClass(status) {
   border: 1px solid transparent;
 }
 
+:global(.dark) :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page) {
+  color: #a1a1a6 !important;
+}
+
 :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page:hover) {
   background-color: #f1f5f9;
   color: #0f172a;
+}
+
+:global(.dark) :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page:hover) {
+  background-color: var(--app-secondary) !important;
+  color: white !important;
 }
 
 :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page.p-highlight) {
@@ -299,9 +338,20 @@ function getStatusBadgeClass(status) {
   box-shadow: 0 4px 14px 0 rgba(133, 13, 18, 0.39);
 }
 
+:global(.dark) :deep(.modern-datatable .p-paginator .p-paginator-pages .p-paginator-page.p-highlight) {
+  background-color: var(--brand-red) !important;
+  box-shadow: 0 4px 14px 0 rgba(255, 69, 58, 0.2) !important;
+}
+
 :deep(.modern-datatable .p-dropdown) {
   border-radius: 0.75rem;
   border-color: #e2e8f0;
+}
+
+:global(.dark) :deep(.modern-datatable .p-dropdown) {
+  background-color: var(--app-secondary) !important;
+  border-color: var(--app-border) !important;
+  color: white !important;
 }
 
 :deep(.modern-datatable .p-dropdown:not(.p-disabled):hover) {
@@ -311,6 +361,11 @@ function getStatusBadgeClass(status) {
 :deep(.modern-datatable .p-dropdown:not(.p-disabled).p-focus) {
   box-shadow: 0 0 0 2px rgba(133, 13, 18, 0.2);
   border-color: #850D12;
+}
+
+:global(.dark) :deep(.modern-datatable .p-dropdown:not(.p-disabled).p-focus) {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+  border-color: white !important;
 }
 
 @media (max-width: 768px) {

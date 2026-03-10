@@ -82,14 +82,14 @@
         <label class="field-label">Foto {{ mode === 'edit' ? '(dejar vacío para mantener la actual)' : '' }}</label>
         <div class="flex items-center gap-4">
           <!-- Preview si ya existe -->
-          <div v-if="mode === 'edit' && user_original_foto && !fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-[#F5F5F7] border border-[#E8E8ED] shrink-0">
+          <div v-if="mode === 'edit' && user_original_foto && !fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-app-secondary border border-app-border shrink-0">
             <img :src="`/storage/${user_original_foto}`" class="w-full h-full object-cover" />
           </div>
-          <div v-if="fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-[#F5F5F7] border border-emerald-200 shrink-0">
+          <div v-if="fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-app-secondary border border-emerald-200 shrink-0">
             <img :src="fotoPreview" class="w-full h-full object-cover" />
           </div>
 
-          <label class="flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border border-dashed border-[#E8E8ED] bg-[#F5F5F7] hover:bg-gray-100 transition text-sm font-bold text-[#86868B]">
+          <label class="flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border border-dashed border-app-border bg-app-secondary hover:bg-white dark:hover:bg-white/5 transition text-sm font-bold text-[#86868B]">
             <i class="pi pi-upload"></i>
             {{ fotoPreview ? 'Cambiar foto' : 'Subir foto' }}
             <input type="file" accept="image/*" class="hidden" @change="onFotoChange" />
@@ -103,13 +103,13 @@
 
     <template #footer>
       <div class="flex justify-end gap-2 pt-2">
-        <Button label="Cancelar" text @click="$emit('update:visible', false)" :disabled="saving" />
+        <Button label="Cancelar" text @click="$emit('update:visible', false)" :disabled="saving" class="dark:text-[#A1A1A6]" />
         <Button
           :label="mode === 'create' ? 'Crear incidencia' : 'Guardar cambios'"
           :icon="saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
           :loading="saving"
           @click="submit"
-          class="!bg-[#1D1D1F] !border-[#1D1D1F] !rounded-xl !font-bold"
+          class="!bg-[#1D1D1F] !border-[#1D1D1F] dark:!bg-white dark:!text-black dark:!border-white !rounded-xl !font-bold"
         />
       </div>
     </template>
@@ -229,10 +229,12 @@ export default {
 .field-label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #1D1D1F;
+  color: var(--app-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  opacity: 0.9;
 }
+
 .field-error {
   font-size: 0.75rem;
   color: #ef4444;
