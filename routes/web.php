@@ -11,7 +11,7 @@ use App\Http\Middleware\WorkerMiddleware;
 
 // Auth (todo se maneja desde AuthController)
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/', 'showLoginForm')->name('login');
+    Route::get('/', 'showLoginForm')->name('login1');
     Route::get('/register', 'showRegisterForm')->name('register.show');
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/register', 'register')->name('register');
