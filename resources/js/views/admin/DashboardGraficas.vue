@@ -24,97 +24,36 @@
     </PageHeader>
 
     <!-- Grid de KPIs rápidos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div v-for="stat in quickStats" :key="stat.label" class="premium-stat-card group">
-        <div :class="['stat-icon-wrapper', stat.colorClass]">
-          <i :class="stat.icon"></i>
-        </div>
-        <div class="mt-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#86868B] dark:text-[#A1A1A6]">{{ stat.label }}</p>
-          <h4 class="text-3xl font-black mt-1 text-[#1D1D1F] dark:text-white">{{ stat.value }}</h4>
-        </div>
-        <div class="absolute bottom-0 left-0 w-0 h-1 bg-brand-red transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
+    <DashboardAdminKPIs :stats="quickStats" />
 
-    <!-- Primera Fíla de Gráficas: Estatus y Categorías -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <!-- Incidencias por Estado -->
-      <div class="chart-container-card" id="chart-status">
-        <div class="chart-header">
-          <h3 class="chart-title">Estado de Incidencias</h3>
-          <p class="chart-subtitle">Distribución porcentual por estatus actual</p>
-        </div>
-        <div class="p-8 flex justify-center items-center h-[350px]">
-          <Chart type="pie" :data="statusChartData" :options="pieOptions" class="w-full max-w-[300px]" />
-        </div>
-      </div>
+    <!-- Bloque de Gráficas -->
+    <DashboardAdminAnalyticsGrid
+      :statusData="statusChartData"
+      :categoryData="categoryChartData"
+      :timelineData="timelineChartData"
+      :userData="userChartData"
+      :pieOptions="pieOptions"
+      :barOptions="barOptions"
+      :lineOptions="lineOptions"
+      :doughnutOptions="doughnutOptions"
+    />
 
-      <!-- Incidencias por Categoría -->
-      <div class="chart-container-card" id="chart-categories">
-        <div class="chart-header">
-          <h3 class="chart-title">Incidencias por Categoría</h3>
-          <p class="chart-subtitle">Top 5 tipos de reportes más frecuentes</p>
-        </div>
-        <div class="p-8 h-[350px]">
-          <Chart type="bar" :data="categoryChartData" :options="barOptions" class="h-full" />
-        </div>
-      </div>
-    </div>
+    <!-- Tabla de Resumen -->
+    <DashboardAdminSummaryTable :data="incidenciasData" />
 
-    <!-- Segunda Filla: Línea de tiempo y Usuarios -->
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8">
-      <!-- Evolución Mensual -->
-      <div class="chart-container-card" id="chart-timeline">
-        <div class="chart-header">
-          <h3 class="chart-title">Evolución de Reportes</h3>
-          <p class="chart-subtitle">Resumen mensual de incidencias recibidas</p>
-        </div>
-        <div class="p-8 h-[400px]">
-          <Chart type="line" :data="timelineChartData" :options="lineOptions" class="h-full" />
-        </div>
-      </div>
-
-      <!-- Actividad de Usuarios -->
-      <div class="chart-container-card" id="chart-users">
-        <div class="chart-header">
-          <h3 class="chart-title">Distribución de Usuarios</h3>
-          <p class="chart-subtitle">Personal operativo vs ciudadanos</p>
-        </div>
-        <div class="p-8 flex justify-center items-center h-[400px]">
-          <Chart type="doughnut" :data="userChartData" :options="doughnutOptions" class="w-full max-w-[280px]" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla de Últimas Incidencias (Opcional, para complementar) -->
-    <div class="chart-container-card">
-      <div class="chart-header border-b border-app-border/50">
-        <h3 class="chart-title text-brand-red">Resumen Operativo</h3>
-        <p class="chart-subtitle">Datos consolidados para auditoría rápida</p>
-      </div>
-      <div class="p-0 overflow-hidden">
-        <DataTable :value="incidenciasData" class="p-datatable-sm p-datatable-dashboard h-[300px]" scrollable scrollHeight="flex">
-          <Column field="id" header="ID"></Column>
-          <Column field="tipo" header="Tipo"></Column>
-          <Column field="fecha" header="Fecha"></Column>
-          <Column field="estatus" header="Estatus">
-            <template #body="slotProps">
-              <Tag :value="slotProps.data.estatus" :severity="getSeverity(slotProps.data.estatus)" />
-            </template>
-          </Column>
-        </DataTable>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { utils, writeFile } from 'xlsx'
 import { jsPDF } from 'jspdf'
-import html2canvas from 'html2canvas'
 import 'jspdf-autotable'
+import PageHeader from '@/Components/PageHeader.vue'
+import DashboardAdminKPIs from '@/Components/DashboardAdminKPIs.vue'
+import DashboardAdminAnalyticsGrid from '@/Components/DashboardAdminAnalyticsGrid.vue'
+import DashboardAdminSummaryTable from '@/Components/DashboardAdminSummaryTable.vue'
+import Button from 'primevue/button'
 
 // Datos Mock (Simulación de incidencias y usuarios)
 const incidenciasData = ref([

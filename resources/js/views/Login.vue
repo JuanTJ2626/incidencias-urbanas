@@ -75,30 +75,41 @@
       class="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative overflow-y-auto"
     >
       <div class="w-full max-w-md">
-        <!-- Mobile Header -->
-        <div class="lg:hidden text-center mb-10">
+        <!-- Mobile Header (Hidden because 3D Logo is now visible on mobile) -->
+        <div class="hidden text-center mb-10">
           <div class="flex justify-center mb-3">
             <div class="w-12 h-12 bg-app-secondary rounded-xl flex items-center justify-center border border-app-border">
               <i class="pi pi-building text-xl text-brand-red"></i>
             </div>
           </div>
-          <h1 class="text-2xl font-bold text-gray-900">Incidencias Urbanas</h1>
-          <p class="text-gray-500 text-sm mt-1">Acceso al Sistema</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Incidencias Urbanas</h1>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Acceso al Sistema</p>
         </div>
 
         <!-- Form Card -->
         <div class="bg-white dark:bg-app-card p-8 lg:p-10 rounded-3xl shadow-xl border border-app-border relative transition-colors">
-          <!-- Form Header (MEJORADO CON LOGO 3D) -->
+          <!-- Form Header (MEJORADO CON LOGO 3D Y TEXTO SIGIU) -->
           <div class="text-center mb-10">
-            <div class="hidden lg:flex justify-center mb-6">
-              <!-- LOGO 3D CON ORBITA -->
+            <div class="flex items-center justify-center gap-5 mb-8">
+              <!-- LOGO 3D CON ORBITA (Tamaño Ajustado para formato horizontal) -->
               <div class="logo-3d-container">
                 <div class="logo-orbit"></div>
                 <img src="/public/img/jordan.png" alt="Logo Jordan" class="logo-3d" />
               </div>
+              
+              <!-- TEXTO SIGIU -->
+              <div class="flex flex-col text-left">
+                <span class="text-[2.75rem] font-black tracking-tight text-gray-900 dark:text-white leading-none">
+                  SIG<span class="text-brand-red">IU</span>
+                </span>
+                <span class="text-[10px] sm:text-xs font-bold text-brand-red uppercase tracking-[0.2em] mt-1.5 whitespace-nowrap">
+                  Sistema de Gestión
+                </span>
+              </div>
             </div>
+
             <!-- TITULO CAMBIADO A BIENVENIDO -->
-            <h1 class="text-3xl font-black text-gray-900 mb-3 tracking-tight">
+            <h1 class="text-3xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
               Bienvenido
             </h1>
             <!-- LINEAS DECORATIVAS MEJORADAS -->
@@ -108,7 +119,7 @@
               <div class="h-1 w-3 bg-gray-200/50 rounded-full"></div>
             </div>
             <!-- TEXTO MEJORADO -->
-            <p class="text-gray-400 font-medium text-[15px]">
+            <p class="text-gray-400 dark:text-white/70 font-medium text-[15px]">
               Ingresa tus credenciales para acceder al sistema
             </p>
           </div>
@@ -121,7 +132,7 @@
                 <InputText
                   id="email"
                   v-model="form.email"
-                  class="w-full !pl-4 !pr-4 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
+                  class="w-full !pl-4 !pr-4 !py-3 !bg-white dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200 shadow-sm"
                   :class="{ '!border-red-500': validationErrors.email || form.errors.email }"
                 />
                 <label for="email" class="text-gray-500">Correo Electrónico</label>
@@ -141,10 +152,10 @@
                   :feedback="false"
                   toggleMask
                   class="w-full"
-                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-app-secondary dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200"
+                  inputClass="w-full !pl-4 !pr-10 !py-3 !bg-white dark:!bg-white/5 !border-app-border !rounded-xl !text-gray-900 dark:!text-white !text-sm hover:!border-brand-red/50 focus:!border-brand-red focus:!bg-white dark:focus:!bg-white/10 !transition-all !duration-200 shadow-sm"
                   :class="{ '!border-red-500': validationErrors.password || form.errors.password }"
                 />
-                <label for="password" class="text-gray-500">Contraseña</label>
+                <label for="password" class="text-gray-500 dark:text-white/70">Contraseña</label>
               </FloatLabel>
               <small v-if="validationErrors.password" class="text-red-500 text-xs ml-1 flex items-center gap-1">
                 <i class="pi pi-exclamation-circle text-[10px]"></i>
@@ -156,7 +167,7 @@
             <div class="flex items-center justify-between pt-1">
               <div class="flex items-center gap-2.5">
                 <Checkbox v-model="form.remember" binary inputId="remember" />
-                <label for="remember" class="text-sm text-gray-600 cursor-pointer select-none">Recuérdame</label>
+                <label for="remember" class="text-sm text-gray-600 dark:text-white/70 cursor-pointer select-none">Recuérdame</label>
               </div>
             </div>
 
@@ -265,23 +276,44 @@ const submit = () => {
   100% { transform: rotate(360deg); }
 }
 
-/* LOGO 3D Container */
+@keyframes pulsar {
+  0% { transform: translateX(-50%) scale(1); opacity: 1; }
+  50% { transform: translateX(-50%) scale(1.5); opacity: 0.7; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* LOGO 3D Container (Ajustado para formato Horizontal) */
 .logo-3d-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 1000px;
+}
+
+@media (max-width: 640px) {
+  .logo-3d-container {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .logo-orbit {
   position: absolute;
   inset: 0;
-  border: 2px dashed var(--brand-red);
-  opacity: 0.2;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--app-card), var(--app-card)) padding-box,
+              conic-gradient(from 0deg, var(--brand-red), var(--brand-red-light), var(--brand-red)) border-box;
+  opacity: 1;
   border-radius: 50%;
-  animation: orbit 20s linear infinite;
+  animation: orbit 10s linear infinite;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  filter: drop-shadow(0 0 5px rgba(138, 21, 56, 0.4));
 }
 
 .logo-orbit::before {
@@ -294,16 +326,26 @@ const submit = () => {
   background: var(--brand-red);
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 10px var(--brand-red);
+  box-shadow: 0 0 10px var(--brand-red), 0 0 20px var(--brand-red);
+  animation: pulsar 1.5s ease-in-out infinite;
+  z-index: 2;
+  border: 1.5px solid white;
 }
 
 .logo-3d {
-  width: 150px;
-  height: 150px;
+  width: 75px;
+  height: 75px;
   object-fit: contain;
-  filter: drop-shadow(0 15px 40px var(--brand-red));
+  filter: drop-shadow(0 10px 20px rgba(138, 21, 56, 0.4));
   opacity: 1;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 640px) {
+  .logo-3d {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .logo-3d-container:hover .logo-3d {
@@ -314,9 +356,13 @@ const submit = () => {
 :deep(.p-inputtext:enabled:focus) { box-shadow: 0 0 0 3px var(--brand-red); }
 :deep(.p-checkbox-box.p-highlight) { background: var(--brand-red); border-color: var(--brand-red); }
 :deep(.p-password input) { width: 100%; }
-:deep(.p-float-label label) { margin-left: 0.5rem; color: #6b7280; }
+:deep(.p-float-label label) { margin-left: 0.5rem; color: #6b7280; transition: color 0.3s ease; }
+.dark :deep(.p-float-label label) { color: rgba(255, 255, 255, 0.7); }
+.dark :deep(input::placeholder) { color: rgba(255, 255, 255, 0.4); }
 :deep(.p-inputtext:focus ~ label),
-:deep(.p-inputtext.p-filled ~ label) {
+:deep(.p-inputtext.p-filled ~ label),
+:deep(.p-inputwrapper-focus ~ label),
+:deep(.p-inputwrapper-filled ~ label) {
   background-color: transparent;
   color: var(--brand-red);
   font-weight: 600;

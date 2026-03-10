@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Mail\IncidenciaStatusChanged;
 use App\Models\Incidencias;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class TrabajadorService
@@ -81,6 +84,8 @@ class TrabajadorService
             );
         }
 
+        $estatusAnterior = $inc->estatus;
+
         // Borrar foto anterior de cierre si existía (p.ej. evidencia rechazada)
         if ($inc->foto_despues) {
             Storage::disk('public')->delete($inc->foto_despues);
@@ -98,6 +103,34 @@ class TrabajadorService
             'motivo_rechazo' => null,   // limpia rechazo anterior si había
         ]);
 
+        // Notificar al ciudadano que su reporte está en revisión
+        $this->notificarCambioEstatus($inc, $estatusAnterior, 'en revisión');
+
         return ['message' => 'Evidencia enviada. Esperando revisión del administrador.'];
     }
+
+    // ─── Helpers privados ─────────────────────────────────────────────────────
+
+    /**
+     * Envía un correo al ciudadano cuando cambia el estatus.
+     */
+    private function notificarCambioEstatus(Incidencias $inc, string $anterior, string $nuevo): void
+    {
+        if (empty($inc->email)) {
+            return;
+        }
+
+        try {
+            Mail::to($inc->email)->send(
+                new IncidenciaStatusChanged($inc, $anterior, $nuevo)
+            );
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar correo de cambio de estatus (trabajador)', [
+                'incidencia_id' => $inc->id,
+                'email'         => $inc->email,
+                'error'         => $e->getMessage(),
+            ]);
+        }
+    }
 }
+

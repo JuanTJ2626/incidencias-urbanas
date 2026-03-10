@@ -44,7 +44,7 @@
       >
         <!-- Logo Container with Glow -->
         <div
-          class="relative w-[62px] h-[62px] flex items-center justify-center shrink-0 transition-all duration-700 group-hover/sidebar:scale-105"
+          class="relative w-[46px] h-[46px] flex items-center justify-center shrink-0 transition-all duration-700 group-hover/sidebar:scale-105"
           :class="!(isHovered || visible) ? 'translate-x-[11px]' : ''"
         >
           <div class="absolute inset-0 bg-gradient-to-br from-brand-red/20 to-transparent rounded-xl blur-xl opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500"></div>

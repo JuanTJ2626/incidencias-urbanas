@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Mail\IncidenciaStatusChanged;
 use App\Models\Incidencias;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class IncidenciaService
@@ -156,6 +159,9 @@ class IncidenciaService
 
         // Rechazar → eliminar completamente del sistema
         if ($nuevo === 'rechazado') {
+            // Notificar ANTES de eliminar (necesitamos los datos)
+            $this->notificarCambioEstatus($inc, $actual, 'rechazado');
+
             if ($inc->foto) {
                 Storage::disk('public')->delete($inc->foto);
             }
@@ -169,6 +175,9 @@ class IncidenciaService
 
         // Cualquier otra transición permitida
         $inc->update(['estatus' => $nuevo]);
+
+        // Notificar al ciudadano
+        $this->notificarCambioEstatus($inc, $actual, $nuevo);
 
         return [
             'message' => "Estatus actualizado a \"$nuevo\".",
@@ -197,11 +206,16 @@ class IncidenciaService
             );
         }
 
+        $estatusAnterior = $inc->estatus;
+
         if ($accion === 'aprobar') {
             $inc->update([
                 'estatus'        => 'resuelto',
                 'motivo_rechazo' => null,
             ]);
+
+            // Notificar al ciudadano que su reporte fue resuelto
+            $this->notificarCambioEstatus($inc, $estatusAnterior, 'resuelto');
 
             return ['message' => 'Orden aprobada y marcada como resuelta.'];
         }
@@ -213,6 +227,9 @@ class IncidenciaService
             'foto_despues'   => null,
             'cerrado_en'     => null,
         ]);
+
+        // Notificar al ciudadano que sigue en proceso
+        $this->notificarCambioEstatus($inc, $estatusAnterior, 'en proceso');
 
         return ['message' => 'Evidencia rechazada. El trabajador deberá corregir y reenviar.'];
     }
@@ -229,6 +246,7 @@ class IncidenciaService
     public function asignarTrabajador(int $id, int $trabajadorId): array
     {
         $inc = Incidencias::findOrFail($id);
+        $estatusAnterior = $inc->estatus;
 
         if (in_array($inc->estatus, self::BLOQUEADOS_ASIGNACION)) {
             throw new \RuntimeException(
@@ -253,6 +271,9 @@ class IncidenciaService
             'estatus'    => 'en proceso',
         ]);
 
+        // Notificar al ciudadano que su reporte fue aceptado y asignado
+        $this->notificarCambioEstatus($inc, $estatusAnterior, 'en proceso');
+
         return [
             'message'           => "Trabajador \"{$trabajador->name}\" asignado correctamente.",
             'trabajador_nombre' => $trabajador->name,
@@ -261,6 +282,31 @@ class IncidenciaService
     }
 
     // ─── Helpers privados ─────────────────────────────────────────────────────
+
+    /**
+     * Envía un correo electrónico al ciudadano cuando cambia el estatus.
+     * Solo envía si la incidencia tiene un email válido.
+     */
+    private function notificarCambioEstatus(Incidencias $inc, string $anterior, string $nuevo): void
+    {
+        // Solo enviar si hay email del ciudadano
+        if (empty($inc->email)) {
+            return;
+        }
+
+        try {
+            Mail::to($inc->email)->send(
+                new IncidenciaStatusChanged($inc, $anterior, $nuevo)
+            );
+        } catch (\Throwable $e) {
+            // Log del error pero NO detenemos el flujo principal
+            Log::warning('No se pudo enviar correo de cambio de estatus', [
+                'incidencia_id' => $inc->id,
+                'email'         => $inc->email,
+                'error'         => $e->getMessage(),
+            ]);
+        }
+    }
 
     /**
      * Genera un mensaje de error descriptivo según el estatus actual.

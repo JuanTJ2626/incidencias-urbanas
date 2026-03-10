@@ -38,6 +38,7 @@
         { key: 'actions', label: 'Acciones', width: '220px' }
       ]"
       :data="filteredData"
+      :loading="loading"
       selectable
       v-model:selection="selectedIncidencias"
     >
