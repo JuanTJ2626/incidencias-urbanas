@@ -12,8 +12,8 @@ class SyncService
      */
     public static function sincronizarFotoConHostinger(int $incidenciaId, string $rutaArchivoLocal, string $tipo = 'despues')
     {
-        $url = env('HOSTINGER_URL', 'https://reporteurbano.site/public/api/upload_photo.php');
-        $apiKey = env('SYNC_API_KEY', 'ReporteUrbano2026_SyncKey_Hostinger_Railway');
+        $url = config('services.hostinger.url');
+        $apiKey = config('services.hostinger.key');
         
         $fullPath = storage_path('app/public/' . $rutaArchivoLocal);
 
