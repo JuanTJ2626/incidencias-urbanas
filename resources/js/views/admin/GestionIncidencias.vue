@@ -17,7 +17,7 @@
           <button
             @click="crearVisible = true"
             class="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gradient text-white text-sm font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-red/20"
-          ><i class="pi pi-plus"></i> Nueva Incidencia</button>
+          ><i class="pi pi-plus"></i> Nueva IncidenciaAA</button>
         </div>
       </template>
     </PageHeader>

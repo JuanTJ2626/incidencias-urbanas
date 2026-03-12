@@ -31,4 +31,9 @@ return [
         ],
     ],
 
+    'hostinger' => [
+        'url' => env('HOSTINGER_SYNC_ENDPOINT', 'https://reporteurbano.site/public/api/upload_photo.php'),
+        'key' => env('HOSTINGER_SYNC_TOKEN', 'ReporteUrbano2026_SyncKey_Hostinger_Railway'),
+    ],
+
 ];
