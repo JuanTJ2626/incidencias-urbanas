@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Mail\IncidenciaStatusChanged;
+use App\Mail\NotificacionTrabajador;
+use App\Services\SyncService;
 use App\Models\Incidencias;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -48,12 +50,35 @@ class IncidenciaService
             'descripcion'      => $inc->descripcion,
             'estatus'          => $inc->estatus,
             'foto'             => $inc->foto,
+            'foto_url'         => $this->obtenerUrlImagen($inc->foto),
+            'foto_despues'     => $inc->foto_despues,
+            'foto_despues_url' => $this->obtenerUrlImagen($inc->foto_despues),
             'latitud'          => $inc->latitud  ? (float) $inc->latitud  : null,
             'longitud'         => $inc->longitud ? (float) $inc->longitud : null,
             'asignado_a'       => $inc->asignado_a,
             'trabajador_nombre'=> $inc->trabajador?->name,
             'created_at'       => $inc->created_at?->format('d/m/Y H:i'),
         ];
+    }
+
+    /**
+     * Helper para obtener la URL de una imagen, priorizando local y fallback a Hostinger.
+     */
+    private function obtenerUrlImagen(?string $path): ?string
+    {
+        if (!$path) return null;
+
+        // Si el path ya es una URL completa, devolverla
+        if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+
+        // Si existe localmente en el storage de Railway
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::url($path);
+        }
+
+        // Fallback al servidor de Hostinger (donde los ciudadanos suben reportes)
+        $hostingerBase = "https://reporteurbano.site/public/uploads/";
+        return $hostingerBase . basename($path);
     }
 
     /**
@@ -89,7 +114,14 @@ class IncidenciaService
             $datos['foto'] = $foto->store('incidencias', 'public');
         }
 
-        return Incidencias::create($datos);
+        $inc = Incidencias::create($datos);
+
+        // NUEVO: Sincronizar foto ANTES al crear
+        if ($inc->foto) {
+            SyncService::sincronizarFotoConHostinger($inc->id, $inc->foto, 'antes');
+        }
+
+        return $inc;
     }
 
     /**
@@ -110,6 +142,16 @@ class IncidenciaService
         }
 
         $inc->update($datos);
+
+        // Si se actualizó la foto original (antes), sincronizar
+        if ($inc->wasChanged('foto') && $inc->foto) {
+            SyncService::sincronizarFotoConHostinger($inc->id, $inc->foto, 'antes');
+        }
+
+        // Si se actualizó la foto de cierre (foto_despues), sincronizar
+        if ($inc->wasChanged('foto_despues') && $inc->foto_despues) {
+            SyncService::sincronizarFotoConHostinger($inc->id, $inc->foto_despues, 'despues');
+        }
 
         return $inc;
     }
@@ -231,6 +273,21 @@ class IncidenciaService
         // Notificar al ciudadano que sigue en proceso
         $this->notificarCambioEstatus($inc, $estatusAnterior, 'en proceso');
 
+        // NUEVO: Notificar al TRABAJADOR que su evidencia fue rechazada
+        if ($inc->trabajador) {
+            try {
+                Mail::to($inc->trabajador->email)->send(
+                    new NotificacionTrabajador($inc, 'rechazo')
+                );
+            } catch (\Throwable $e) {
+                Log::warning('No se pudo enviar correo de rechazo al trabajador', [
+                    'incidencia_id' => $inc->id,
+                    'email'         => $inc->trabajador->email,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
+
         return ['message' => 'Evidencia rechazada. El trabajador deberá corregir y reenviar.'];
     }
 
@@ -243,7 +300,7 @@ class IncidenciaService
      *
      * @throws \RuntimeException
      */
-    public function asignarTrabajador(int $id, int $trabajadorId): array
+    public function asignarTrabajador(int $id, int $trabajadorId, ?string $notaAdmin = null): array
     {
         $inc = Incidencias::findOrFail($id);
         $estatusAnterior = $inc->estatus;
@@ -269,10 +326,24 @@ class IncidenciaService
         $inc->update([
             'asignado_a' => $trabajador->id,
             'estatus'    => 'en proceso',
+            'nota_admin' => $notaAdmin,
         ]);
 
         // Notificar al ciudadano que su reporte fue aceptado y asignado
         $this->notificarCambioEstatus($inc, $estatusAnterior, 'en proceso');
+
+        // NUEVO: Notificar al TRABAJADOR que se le asignó una tarea
+        try {
+            Mail::to($trabajador->email)->send(
+                new NotificacionTrabajador($inc, 'asignacion', $notaAdmin)
+            );
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar correo de asignación al trabajador', [
+                'incidencia_id' => $inc->id,
+                'email'         => $trabajador->email,
+                'error'         => $e->getMessage(),
+            ]);
+        }
 
         return [
             'message'           => "Trabajador \"{$trabajador->name}\" asignado correctamente.",

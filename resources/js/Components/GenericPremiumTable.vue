@@ -3,17 +3,17 @@
     
     <!-- Acciones en lote (Bulk Actions) -->
     <Transition name="slide-up">
-      <div v-if="selection.length > 0" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-6 px-8 py-4 bg-[#1D1D1F] dark:bg-white text-white dark:text-black rounded-[2rem] shadow-2xl shadow-black/30 border border-white/10">
-        <div class="flex items-center gap-3 pr-6 border-r border-white/20 dark:border-black/10">
-          <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center text-xs font-black text-white">
+      <div v-if="selection.length > 0" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-wrap items-center justify-center gap-4 md:gap-6 px-4 py-3 md:px-8 md:py-4 bg-[#1D1D1F] dark:bg-white text-white dark:text-black rounded-3xl md:rounded-[2rem] shadow-2xl shadow-black/30 border border-white/10 w-[90vw] md:w-auto overflow-hidden">
+        <div class="flex items-center gap-2 md:gap-3 pr-4 md:pr-6 border-r border-white/20 dark:border-black/10 shrink-0">
+          <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-brand-red flex items-center justify-center text-[10px] md:text-xs font-black text-white">
             {{ selection.length }}
           </div>
-          <span class="text-sm font-black tracking-tight uppercase">Seleccionados</span>
+          <span class="text-xs md:text-sm font-black tracking-tight uppercase">Seleccionados</span>
         </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 md:gap-4 shrink-0">
           <slot name="bulk-actions" :selection="selection"></slot>
-          <button @click="clearSelection" class="text-xs font-bold hover:text-brand-red dark:hover:text-brand-red transition-colors flex items-center gap-2">
+          <button @click="clearSelection" class="text-[10px] md:text-xs font-bold hover:text-brand-red dark:hover:text-brand-red transition-colors flex items-center gap-1.5 md:gap-2">
             <i class="pi pi-times-circle"></i>
             Cancelar
           </button>

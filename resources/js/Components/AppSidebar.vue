@@ -8,9 +8,9 @@
 
   <!-- Sidebar Premium Glass -->
   <aside
-    class="bg-white/80 dark:bg-app-bg backdrop-blur-[60px] backdrop-saturate-[200%] border-r border-white/50 dark:border-app-border z-50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-r-2xl"
+    class="bg-white/80 dark:bg-app-bg backdrop-blur-xl border-r border-white/50 dark:border-app-border z-50 transition-[width,transform,background-color,box-shadow] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col overflow-hidden h-screen fixed top-0 left-0 group/sidebar rounded-r-2xl"
     :class="[
-      isHovered || visible ? 'w-72 shadow-[0_0_80px_rgba(0,0,0,0.35)] dark:shadow-[0_0_80px_rgba(0,0,0,0.6)]' : 'w-[68px] shadow-xl',
+      isHovered || visible ? 'w-72 shadow-[0_0_40px_rgba(0,0,0,0.25)] dark:shadow-[0_0_50px_rgba(0,0,0,0.5)]' : 'w-[68px] shadow-xl',
       visible ? 'translate-x-0 max-lg:w-[300px]' : 'max-lg:-translate-x-full',
     ]"
     :style="[
@@ -112,12 +112,12 @@
               v-for="(subItem, itemIndex) in item.items"
               :key="subItem.label"
               :href="subItem.url || '#'"
-              class="flex items-center h-[46px] rounded-2xl transition-all duration-300 group/item relative overflow-hidden"
+              class="flex items-center h-[46px] rounded-2xl transition-[background-color,padding,gap,color,opacity,transform] duration-300 group/item relative overflow-hidden"
               :class="[
                 isHovered || visible ? 'px-4 gap-4' : 'px-2 justify-center',
                 $page.url === subItem.url
                   ? 'bg-gradient-to-r from-brand-red to-[#a01a45] text-white shadow-lg shadow-brand-red/25'
-                  : 'text-gray-700 dark:text-gray-400 hover:bg-brand-red/5 dark:hover:bg-white/5 hover:text-brand-red dark:hover:text-white transition-all'
+                  : 'text-gray-700 dark:text-gray-400 hover:bg-brand-red/5 dark:hover:bg-white/5 hover:text-brand-red dark:hover:text-white transition-colors'
               ]"
               @click="handleMenuClick(subItem.url)"
             >
@@ -325,7 +325,7 @@ onBeforeUnmount(() => {
 <style scoped>
 /* Smooth transitions */
 .transition-all {
-  transition-property: all;
+  transition-property: transform, opacity, background-color, border-color, color, box-shadow;
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 

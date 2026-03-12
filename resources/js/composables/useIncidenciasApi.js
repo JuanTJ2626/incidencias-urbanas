@@ -3,8 +3,7 @@
  * y la gestión del estado de carga para el módulo de administración.
  */
 export function useIncidenciasApi(toast) {
-    const csrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content
-    const headers = () => ({ 'X-CSRF-TOKEN': csrfToken() })
+    const headers = () => ({})
 
     /**
      * Cambia el estatus de una incidencia.
@@ -36,9 +35,10 @@ export function useIncidenciasApi(toast) {
      * Asigna un trabajador a una incidencia.
      * @returns {{ trabajador_nombre?: string }}
      */
-    async function asignarTrabajador(incId, trabajadorId) {
+    async function asignarTrabajador(incId, trabajadorId, notaAdmin = null) {
         const res = await axios.patch(`/admin/incidencias/${incId}/asignar`, {
             asignado_a: trabajadorId,
+            nota_admin: notaAdmin
         }, { headers: headers() })
         return res.data
     }

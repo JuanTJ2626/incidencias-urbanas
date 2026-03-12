@@ -20,18 +20,18 @@
       class="bg-white dark:bg-app-card border border-app-border rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col h-auto"
     >
       <div
-        class="px-10 py-10 border-b border-app-secondary dark:border-app-border flex flex-col sm:flex-row justify-between items-center gap-6"
+        class="px-5 py-6 md:px-10 md:py-10 border-b border-app-secondary dark:border-app-border flex flex-col md:flex-row justify-between items-center gap-6"
       >
-        <div>
-          <h3 class="text-2xl font-black text-[#1D1D1F] dark:text-white tracking-tight">
+        <div class="text-center md:text-left">
+          <h3 class="text-xl md:text-2xl font-black text-[#1D1D1F] dark:text-white tracking-tight">
             Directorio de Usuarios
           </h3>
-          <p class="text-sm font-bold text-[#86868B] dark:text-[#A1A1A6] mt-1.5">
+          <p class="text-[11px] md:text-sm font-bold text-[#86868B] dark:text-[#A1A1A6] mt-1.5">
             Gestiona los accesos y privilegios del sistema.
           </p>
         </div>
-        <div class="flex items-center gap-4 w-full sm:w-auto">
-          <div class="relative w-full sm:w-72 group">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          <div class="relative w-full md:w-72 group">
             <i
               class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B] dark:text-[#A1A1A6] group-focus-within:text-[#1D1D1F] dark:group-focus-within:text-white transition-colors"
             ></i>
@@ -44,7 +44,7 @@
           <Button
             label="Nuevo Usuario"
             icon="pi pi-plus"
-            class="!bg-[#1D1D1F] dark:!bg-white !border-[#1D1D1F] dark:!border-white dark:!text-black !rounded-2xl !px-8 !py-3.5 !font-black !shadow-xl hover:!scale-105 active:!scale-95 transition-all"
+            class="!w-full md:!w-auto !bg-[#1D1D1F] dark:!bg-white !border-[#1D1D1F] dark:!border-white dark:!text-black !rounded-2xl !px-8 !py-3.5 !font-black !shadow-xl hover:!scale-105 active:!scale-95 transition-all"
             @click="openCreateDialog"
           />
         </div>

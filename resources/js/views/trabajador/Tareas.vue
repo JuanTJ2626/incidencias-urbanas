@@ -59,6 +59,16 @@
             <span class="text-xs text-gray-400 shrink-0 font-mono">#{{ tarea.id }}</span>
           </div>
           <p v-if="tarea.descripcion" class="text-xs text-[#86868B] dark:text-[#A1A1A6] line-clamp-2">{{ tarea.descripcion }}</p>
+          
+          <!-- Nota del Administrador -->
+          <div v-if="tarea.nota_admin && tarea.estatus === 'en proceso'" class="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl px-3 py-2 flex items-start gap-2">
+            <i class="pi pi-info-circle text-amber-500 mt-0.5 shrink-0"></i>
+            <div>
+              <p class="text-[10px] font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest">Nota del Admin:</p>
+              <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5 leading-relaxed">{{ tarea.nota_admin }}</p>
+            </div>
+          </div>
+
           <!-- Aviso de rechazo del admin -->
           <div v-if="tarea.motivo_rechazo && tarea.estatus === 'en proceso'" class="bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 flex items-start gap-2">
             <i class="pi pi-exclamation-triangle text-rose-500 mt-0.5 shrink-0"></i>

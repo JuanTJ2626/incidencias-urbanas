@@ -325,10 +325,15 @@ class AdminController extends Controller
     {
         $request->validate([
             'asignado_a' => 'required|exists:users,id',
+            'nota_admin' => 'nullable|string|max:1000',
         ]);
 
         try {
-            $result = $this->incidenciaService->asignarTrabajador((int) $id, (int) $request->asignado_a);
+            $result = $this->incidenciaService->asignarTrabajador(
+                (int) $id,
+                (int) $request->asignado_a,
+                $request->nota_admin
+            );
             return response()->json($result);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);

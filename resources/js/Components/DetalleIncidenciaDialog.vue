@@ -8,7 +8,7 @@
   >
     <div v-if="inc" class="flex flex-col gap-5 py-1">
       <!-- Ciudadano -->
-      <div class="grid grid-cols-2 gap-4 text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
           <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest mb-1">Ciudadano</p>
           <p class="font-semibold text-[#1D1D1F] dark:text-white">{{ inc.nombre_ciudadano }}</p>
@@ -30,13 +30,13 @@
       </div>
 
       <!-- Foto original + Mapa reporte -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-2">
           <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
             <i class="pi pi-image text-brand-red"></i> Foto del reporte
           </p>
           <div class="h-52 bg-app-secondary dark:bg-app-bg rounded-xl overflow-hidden border border-app-border">
-            <img v-if="inc.foto" :src="`/storage/${inc.foto}`" class="w-full h-full object-cover" />
+            <img v-if="inc.foto_url" :src="inc.foto_url" class="w-full h-full object-cover" />
             <div v-else class="h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 gap-1">
               <i class="pi pi-image text-3xl"></i>
               <p class="text-xs">Sin foto</p>

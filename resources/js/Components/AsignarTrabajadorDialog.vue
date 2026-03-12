@@ -30,6 +30,18 @@
           </template>
         </Dropdown>
       </div>
+
+      <!-- Nota Admin -->
+      <div class="flex flex-col gap-1.5 mt-1">
+        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Nota / Instrucciones para el trabajador</label>
+        <Textarea 
+          v-model="notaAdmin"
+          rows="3"
+          placeholder="Ej: Revisar poste de luz específico, llevar herramienta X..."
+          class="w-full text-sm resize-none dark:bg-app-bg dark:text-white dark:border-app-border"
+        />
+        <p class="text-[10px] text-gray-400 italic">Esta nota será visible para el trabajador en su tablero.</p>
+      </div>
       <Message v-if="error" severity="error" :closable="false">{{ error }}</Message>
     </div>
 
@@ -50,7 +62,10 @@
 </template>
 
 <script>
+import Textarea from 'primevue/textarea'
+
 export default {
+  components: { Textarea },
   props: {
     modelValue: { type: Boolean, default: false },
     inc: { type: Object, default: null },
@@ -61,6 +76,7 @@ export default {
   data() {
     return {
       trabajadorId: null,
+      notaAdmin: '',
       loading: false,
       error: null,
     }
@@ -77,6 +93,7 @@ export default {
     modelValue(open) {
       if (open) {
         this.trabajadorId = this.inc?.asignado_a ?? null
+        this.notaAdmin = this.inc?.nota_admin ?? ''
         this.error = null
       }
     },
@@ -86,6 +103,7 @@ export default {
     cancelar() {
       this.visible = false
       this.trabajadorId = null
+      this.notaAdmin = ''
     },
 
     confirmar() {
@@ -96,6 +114,7 @@ export default {
       this.$emit('confirmed', {
         incId: this.inc.id,
         trabajadorId: this.trabajadorId,
+        notaAdmin: this.notaAdmin,
         done: (err) => {
           this.loading = false
           if (err) {
