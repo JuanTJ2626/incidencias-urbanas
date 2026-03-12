@@ -5,8 +5,8 @@
       subtitle="Valida, aprueba, rechaza y asigna órdenes de trabajo a los trabajadores."
     >
       <template #actions>
-        <div class="flex items-center gap-3">
-          <div class="relative w-64 group hidden md:block">
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+          <div class="relative w-full md:w-64 group">
             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B] dark:text-[#A1A1A6]"></i>
             <InputText
               v-model="searchQuery"
@@ -16,7 +16,7 @@
           </div>
           <button
             @click="crearVisible = true"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gradient text-white text-sm font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-red/20"
+            class="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gradient text-white text-sm font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-red/20"
           ><i class="pi pi-plus"></i> Nueva Incidencia</button>
         </div>
       </template>
@@ -42,16 +42,7 @@
       selectable
       v-model:selection="selectedIncidencias"
     >
-      <!-- Acciones masivas -->
-      <template #bulk-actions="{ selection }">
-        <button 
-          @click="bulkDeleteIncidencias(selection)"
-          class="flex items-center gap-2 px-6 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-black transition-all active:scale-95 shadow-lg shadow-rose-500/20"
-        >
-          <i class="pi pi-trash"></i>
-          Borrar Seleccionadas
-        </button>
-      </template>
+      <!-- Eliminadas acciones masivas de borrado por flujo de rechazo -->
       <!-- Slot ID -->
       <template #cell-id="{ value }">
         <span class="text-xs font-black text-[#86868B] dark:text-[#A1A1A6]">#{{ value }}</span>
@@ -95,27 +86,38 @@
       <!-- Slot Acciones -->
       <template #cell-actions="{ row }">
         <div class="flex items-center gap-1.5">
-          <button @click="abrirDetalle(row)" class="w-8 h-8 rounded-lg bg-app-secondary hover:bg-app-border dark:hover:bg-white/10 transition-all flex items-center justify-center text-[#1D1D1F] dark:text-white" title="Ver Detalle">
+          <!-- DETALLE -->
+          <button @click="abrirDetalle(row)" :disabled="loadingId === row.id" class="w-8 h-8 rounded-lg bg-app-secondary hover:bg-app-border dark:hover:bg-white/10 transition-all flex items-center justify-center text-[#1D1D1F] dark:text-white" title="Ver Detalle">
              <i class="pi pi-eye text-xs"></i>
           </button>
           
-          <template v-if="row.estatus === 'en revisión'">
-            <button @click="handleAprobarCierre(row.id)" :disabled="loadingId === row.id" class="px-3 h-8 rounded-lg bg-emerald-500 text-white text-[10px] font-black hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1">
-              <i class="pi pi-check text-[10px]"></i> APROBAR
-            </button>
-          </template>
-          <template v-else>
-             <button @click="asignarInc = row; asignarVisible = true" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20 hover:bg-amber-100 transition-all flex items-center justify-center" title="Asignar">
-               <i class="pi pi-user-plus text-xs"></i>
-             </button>
-          </template>
-
-          <button @click="abrirEditar(row)" class="w-8 h-8 rounded-lg bg-app-secondary hover:bg-app-border dark:hover:bg-white/10 transition-all flex items-center justify-center text-[#1D1D1F] dark:text-white">
-             <i class="pi pi-pencil text-xs"></i>
+          <!-- APROBAR (Solo en revisión) -->
+          <button 
+            v-if="row.estatus === 'en revisión'"
+            @click="handleAprobarCierre(row.id)" 
+            :disabled="loadingId === row.id" 
+            class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center" 
+            title="Aprobar Reporte"
+          >
+            <i v-if="loadingId === row.id" class="pi pi-spinner pi-spin text-[10px]"></i>
+            <i v-else class="pi pi-check text-xs"></i>
           </button>
-          
-          <button @click="eliminarIncidencia(row)" :disabled="loadingId === row.id" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white transition-all flex items-center justify-center">
-             <i class="pi pi-trash text-xs"></i>
+
+          <!-- ASIGNAR (Solo pendiente o en proceso) -->
+          <button 
+            v-if="['pendiente', 'en proceso'].includes(row.estatus)"
+            @click="asignarInc = row; asignarVisible = true" 
+            :disabled="loadingId === row.id" 
+            class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20 hover:bg-amber-100 transition-all flex items-center justify-center" 
+            title="Asignar"
+          >
+            <i v-if="loadingId === row.id" class="pi pi-spinner pi-spin text-[10px]"></i>
+            <i v-else class="pi pi-user-plus text-xs"></i>
+          </button>
+
+          <!-- EDITAR -->
+          <button @click="abrirEditar(row)" :disabled="loadingId === row.id" class="w-8 h-8 rounded-lg bg-app-secondary hover:bg-app-border dark:hover:bg-white/10 transition-all flex items-center justify-center text-[#1D1D1F] dark:text-white" title="Editar">
+             <i class="pi pi-pencil text-xs"></i>
           </button>
         </div>
       </template>
@@ -266,6 +268,7 @@ export default {
 
     // ─── API handlers ───────────────────────────────────────
     async handleCambiarEstatus(id, estatus) {
+      if (!confirm(`¿Seguro que quieres cambiar el estatus a "${estatus}"?`)) return
       this.loadingId = id
       try {
         const data = await api.cambiarEstatus(id, estatus)
@@ -285,6 +288,7 @@ export default {
     },
 
     async handleAprobarCierre(id) {
+      if (!confirm('¿Seguro que quieres marcar este reporte como "Resuelto"? Esta acción es definitiva.')) return
       this.loadingId = id
       try {
         await api.aprobarCierre(id)
@@ -309,13 +313,13 @@ export default {
       }
     },
 
-    async handleAsignarConfirmado({ incId, trabajadorId, done }) {
+    async handleAsignarConfirmado({ incId, trabajadorId, notaAdmin, done }) {
       try {
-        const data = await api.asignarTrabajador(incId, trabajadorId)
+        const data = await api.asignarTrabajador(incId, trabajadorId, notaAdmin)
         const nombre = data?.trabajador_nombre
           ?? this.trabajadores.find(t => t.id === trabajadorId)?.name
           ?? '—'
-        this.actualizarLocal(incId, { asignado_a: trabajadorId, trabajador_nombre: nombre, estatus: 'en proceso' })
+        this.actualizarLocal(incId, { asignado_a: trabajadorId, trabajador_nombre: nombre, estatus: 'en proceso', nota_admin: notaAdmin })
         this.$toast.add({ severity: 'success', summary: 'Asignado', detail: `Trabajador: ${nombre}`, life: 3000 })
         done()
       } catch (e) {

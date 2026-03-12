@@ -82,8 +82,8 @@
 }
 
 .glass-effect {
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
 }
 
 .app-card-elevated {
@@ -91,7 +91,7 @@
 }
 
 .dark .app-card-elevated {
-    box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.4); /* Sombras más pequeñas */
 }
 
 /* ─── RESET & BASE ─── */
@@ -106,7 +106,9 @@ body {
     background-attachment: fixed;
     color: var(--app-text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Optimizamos para no forzar repaints constantes */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── MESH GRADIENT ANIMADO (Fondo Premium) ─── */
@@ -143,9 +145,19 @@ body {
     content: '';
     position: absolute;
     border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.07;
-    animation: meshMove 20s ease-in-out infinite;
+    filter: blur(60px); /* Aún más bajo para gama baja */
+    opacity: 0.05;
+    /* Quitamos la animación por defecto para que no consuma CPU constante */
+    will-change: transform;
+}
+
+@media (min-width: 1024px) {
+    /* Solo animamos en desktop donde hay potencia de sobra */
+    .mesh-gradient-bg::before,
+    .mesh-gradient-bg::after {
+        animation: meshMove 20s ease-in-out infinite;
+        opacity: 0.07;
+    }
 }
 
 .mesh-gradient-bg::before {
@@ -172,7 +184,7 @@ body {
     height: 450px;
     border-radius: 50%;
     background: radial-gradient(circle, #10b981 0%, transparent 70%);
-    filter: blur(120px);
+    filter: blur(80px); /* Reducido */
     opacity: 0.05;
     top: 40%;
     left: 30%;
@@ -279,7 +291,7 @@ body {
 }
 
 .icon-interactive {
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
     cursor: pointer;
 }
 
@@ -343,7 +355,7 @@ small,
     border-radius: 1.5rem !important;
     color: var(--app-text) !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(10px); /* Reducido para performance */
 }
 
 .p-dialog .p-dialog-header {

@@ -131,8 +131,8 @@
 							Evidencia Inicial
 						</div>
 						<Image
-							v-if="inc.foto"
-							:src="`/storage/${inc.foto}`"
+							v-if="inc.foto_url"
+							:src="inc.foto_url"
 							alt="Foto de la incidencia"
 							preview
 							imageClass="w-full h-auto min-h-[220px] max-h-[280px] object-cover cursor-zoom-in hover:opacity-90 transition"
@@ -149,8 +149,8 @@
 							Evidencia de Cierre
 						</div>
 						<Image
-							v-if="inc.foto_despues"
-							:src="`/storage/${inc.foto_despues}`"
+							v-if="inc.foto_despues_url"
+							:src="inc.foto_despues_url"
 							alt="Foto de cierre"
 							preview
 							imageClass="w-full h-auto min-h-[220px] max-h-[280px] object-cover cursor-zoom-in hover:opacity-90 transition"
