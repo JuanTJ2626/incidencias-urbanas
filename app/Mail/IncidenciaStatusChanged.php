@@ -10,41 +10,77 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class IncidenciaStatusChanged extends Mailable implements ShouldQueue
+class IncidenciaStatusChanged extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public string $nombreCiudadano;
-    public string $tipoIncidencia;
-    public string $direccion;
-    public string $estatusAnterior;
-    public string $estatusNuevo;
-    public string $folio;
-    public string $fechaReporte;
-    public string $mensajeDetalle;
-    public string $colorEstatus;
-    public string $iconoEstatus;
+    public $incidencia;
+    public $estatusAnterior;
+    public $estatusNuevo;
+
+    public $folio;
+    public $nombreCiudadano;
+    public $tipoIncidencia;
+    public $direccion;
+    public $fechaReporte;
+    public $colorEstatus;
+    public $iconoEstatus;
+    public $mensajeDetalle;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(
-        Incidencias $incidencia,
-        string $estatusAnterior,
-        string $estatusNuevo
-    ) {
+    public function __construct(Incidencias $incidencia, string $estatusAnterior, string $estatusNuevo)
+    {
+        $this->incidencia = $incidencia;
+        $this->estatusAnterior = $estatusAnterior;
+        $this->estatusNuevo = $estatusNuevo;
+
+        // Mapeo de datos para la vista
+        $this->folio           = $incidencia->id;
         $this->nombreCiudadano = $incidencia->nombre_ciudadano;
         $this->tipoIncidencia  = $incidencia->tipo_incidencia;
         $this->direccion       = $incidencia->direccion;
-        $this->estatusAnterior = $estatusAnterior;
-        $this->estatusNuevo    = $estatusNuevo;
-        $this->folio           = str_pad($incidencia->id, 6, '0', STR_PAD_LEFT);
-        $this->fechaReporte    = $incidencia->created_at?->format('d/m/Y H:i') ?? 'N/A';
+        $this->fechaReporte    = $incidencia->created_at->format('d/m/Y');
 
-        // Mensaje personalizado según el cambio de estatus
-        $this->mensajeDetalle = $this->generarMensaje($estatusNuevo);
-        $this->colorEstatus   = $this->colorPorEstatus($estatusNuevo);
-        $this->iconoEstatus   = $this->iconoPorEstatus($estatusNuevo);
+        // Configuración visual según el estatus
+        $this->setVisualConfig($estatusNuevo);
+    }
+
+    private function setVisualConfig($estatus)
+    {
+        $config = [
+            'pendiente' => [
+                'color' => '#86868B',
+                'icono' => '📝',
+                'msg'   => 'Tu reporte ha sido recibido y está en espera de ser revisado por nuestro equipo.'
+            ],
+            'en proceso' => [
+                'color' => '#0071E3',
+                'icono' => '🔧',
+                'msg'   => 'Tu reporte ha sido revisado y aceptado. Un trabajador ha sido asignado para atender la situación.'
+            ],
+            'en revisión' => [
+                'color' => '#F5A623',
+                'icono' => '👀',
+                'msg'   => 'El trabajo ha sido realizado y está siendo verificado por el administrador.'
+            ],
+            'resuelto' => [
+                'color' => '#28A745',
+                'icono' => '✅',
+                'msg'   => '¡Buenas noticias! Tu reporte ha sido resuelto satisfactoriamente.'
+            ],
+            'rechazado' => [
+                'color' => '#FF3B30',
+                'icono' => '❌',
+                'msg'   => 'Tu reporte no pudo ser procesado en este momento. Por favor verifica la información.'
+            ],
+        ];
+
+        $res = $config[$estatus] ?? $config['pendiente'];
+        $this->colorEstatus   = $res['color'];
+        $this->iconoEstatus   = $res['icono'];
+        $this->mensajeDetalle = $res['msg'];
     }
 
     /**
@@ -53,7 +89,7 @@ class IncidenciaStatusChanged extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Actualización de tu reporte #{$this->folio} — {$this->estatusNuevo}",
+            subject: "Actualización de tu reporte #{$this->folio} - {$this->estatusNuevo}",
         );
     }
 
@@ -68,46 +104,12 @@ class IncidenciaStatusChanged extends Mailable implements ShouldQueue
     }
 
     /**
-     * Genera un mensaje descriptivo según el nuevo estatus.
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
-    private function generarMensaje(string $estatus): string
+    public function attachments(): array
     {
-        return match ($estatus) {
-            'en proceso'  => 'Tu reporte ha sido revisado y aceptado por nuestro equipo. Un trabajador ha sido asignado y está en camino para atender la situación. Te notificaremos cuando se resuelva.',
-            'en revisión' => 'El trabajador asignado ha enviado evidencia de la atención de tu reporte. Nuestro equipo de administración está revisando la evidencia para confirmar que el problema fue resuelto correctamente.',
-            'resuelto'    => '¡Excelente noticia! Tu reporte ha sido resuelto satisfactoriamente. La evidencia fue revisada y aprobada por nuestro equipo. Agradecemos tu participación ciudadana para mejorar nuestra comunidad.',
-            'rechazado'   => 'Después de una revisión, tu reporte no pudo ser procesado. Esto puede deberse a que el reporte no cumple con los criterios necesarios o la información proporcionada no fue suficiente. Te invitamos a crear un nuevo reporte con más detalles.',
-            default       => "El estatus de tu reporte ha sido actualizado a \"{$estatus}\".",
-        };
-    }
-
-    /**
-     * Devuelve el color hexadecimal según el estatus.
-     */
-    private function colorPorEstatus(string $estatus): string
-    {
-        return match ($estatus) {
-            'pendiente'   => '#6B7280',
-            'en proceso'  => '#0EA5E9',
-            'en revisión' => '#F59E0B',
-            'resuelto'    => '#10B981',
-            'rechazado'   => '#EF4444',
-            default       => '#6B7280',
-        };
-    }
-
-    /**
-     * Devuelve un emoji/icono según el estatus.
-     */
-    private function iconoPorEstatus(string $estatus): string
-    {
-        return match ($estatus) {
-            'pendiente'   => '🕐',
-            'en proceso'  => '🔧',
-            'en revisión' => '🔍',
-            'resuelto'    => '✅',
-            'rechazado'   => '❌',
-            default       => '📋',
-        };
+        return [];
     }
 }

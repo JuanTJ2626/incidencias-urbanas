@@ -5,11 +5,11 @@
       v-for="(card, idx) in resolvedStats"
       :key="idx"
       v-ripple
-      class="p-ripple bg-white dark:bg-app-card p-8 rounded-[2.2rem] shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-[#E8E8ED] dark:border-app-border flex flex-col gap-6 hover:-translate-y-2 transition-all duration-500 group cursor-pointer overflow-hidden relative"
+      class="p-ripple bg-white dark:bg-app-card p-8 rounded-[2.2rem] shadow-sm border border-[#E8E8ED] dark:border-app-border flex flex-col gap-6 lg:hover:-translate-y-2 transition-[transform,shadow,background-color] duration-500 group cursor-pointer overflow-hidden relative"
       :class="card.hoverColor"
     >
       <!-- Ícono decorativo de fondo (grande, translúcido) -->
-      <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 group-hover:scale-150 group-hover:rotate-12 transition-all duration-700">
+      <div class="absolute top-0 right-0 p-4 opacity-5 lg:group-hover:opacity-20 lg:group-hover:scale-150 lg:group-hover:rotate-12 transition-all duration-700">
         <i :class="[card.icon, 'text-6xl text-[#1D1D1F] dark:text-white group-hover:text-white']"></i>
       </div>
 

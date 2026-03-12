@@ -11,7 +11,7 @@
     <form @submit.prevent="submit" class="flex flex-col gap-4 py-2">
 
       <!-- Fila 1: Nombre + Email -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="field-label">Nombre ciudadano <span class="text-rose-500">*</span></label>
           <InputText v-model="form.nombre_ciudadano" placeholder="Juan Pérez" class="w-full" />
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Fila 3: Tipo + Estatus -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="field-label">Tipo de incidencia <span class="text-rose-500">*</span></label>
           <Dropdown
@@ -64,7 +64,7 @@
       </div>
 
       <!-- Fila 4: Coordenadas -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="field-label">Latitud</label>
           <InputText v-model="form.latitud" placeholder="20.123456" class="w-full font-mono" />
@@ -82,8 +82,8 @@
         <label class="field-label">Foto {{ mode === 'edit' ? '(dejar vacío para mantener la actual)' : '' }}</label>
         <div class="flex items-center gap-4">
           <!-- Preview si ya existe -->
-          <div v-if="mode === 'edit' && user_original_foto && !fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-app-secondary border border-app-border shrink-0">
-            <img :src="`/storage/${user_original_foto}`" class="w-full h-full object-cover" />
+          <div v-if="mode === 'edit' && user_original_foto_url && !fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-app-secondary border border-app-border shrink-0">
+            <img :src="user_original_foto_url" class="w-full h-full object-cover" />
           </div>
           <div v-if="fotoPreview" class="h-20 w-20 rounded-xl overflow-hidden bg-app-secondary border border-emerald-200 shrink-0">
             <img :src="fotoPreview" class="w-full h-full object-cover" />
@@ -157,8 +157,8 @@ export default {
   },
 
   computed: {
-    user_original_foto() {
-      return this.incidencia?.foto ?? null
+    user_original_foto_url() {
+      return this.incidencia?.foto_url ?? null
     },
   },
 
@@ -203,15 +203,12 @@ export default {
         if (v !== null && v !== '') fd.append(k, v)
       })
 
-      const csrf   = document.querySelector('meta[name="csrf-token"]')?.content
       const isEdit = this.mode === 'edit'
 
       const url    = isEdit ? `/admin/incidencias/${this.incidencia.id}` : '/admin/incidencias'
       if (isEdit) fd.append('_method', 'PUT')
 
-      axios.post(url, fd, {
-        headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'multipart/form-data' },
-      }).then(res => {
+      axios.post(url, fd).then(res => {
         this.$emit('saved', res.data?.incidencia ?? null)
         this.$emit('update:visible', false)
         this.$toast?.add({ severity: 'success', summary: isEdit ? 'Actualizado' : 'Creado', detail: isEdit ? 'Incidencia actualizada.' : 'Incidencia creada.', life: 3000 })

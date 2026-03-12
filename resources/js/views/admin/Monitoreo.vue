@@ -110,13 +110,13 @@
         </div>
 
         <!-- Fotos antes / después -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-image"></i> Foto ANTES (original)
             </p>
             <div class="h-52 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-xl overflow-hidden border border-[#E8E8ED] dark:border-white/5">
-              <img v-if="dialogInc.foto" :src="`/storage/${dialogInc.foto}`" class="w-full h-full object-cover" />
+              <img v-if="dialogInc.foto_url" :src="dialogInc.foto_url" class="w-full h-full object-cover" />
               <div v-else class="h-full flex items-center justify-center text-gray-300 dark:text-gray-600 text-sm">Sin foto</div>
             </div>
           </div>
@@ -126,7 +126,7 @@
               <i class="pi pi-camera"></i> Foto DESPUÉS (evidencia del trabajador)
             </p>
             <div class="h-52 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-xl overflow-hidden border border-[#E8E8ED] dark:border-white/5">
-              <img v-if="dialogInc.foto_despues" :src="`/storage/${dialogInc.foto_despues}`" class="w-full h-full object-cover" />
+              <img v-if="dialogInc.foto_despues_url" :src="dialogInc.foto_despues_url" class="w-full h-full object-cover" />
               <div v-else class="h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 gap-1">
                 <i class="pi pi-camera text-3xl"></i>
                 <p class="text-xs">Sin evidencia aún</p>
@@ -136,8 +136,8 @@
         </div>
 
         <!-- Mapa cierre + notas -->
-        <div v-if="dialogInc.lat_cierre && dialogInc.lng_cierre" class="grid grid-cols-5 gap-4">
-          <div class="col-span-3 flex flex-col gap-2">
+        <div v-if="dialogInc.lat_cierre && dialogInc.lng_cierre" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+          <div class="sm:col-span-3 flex flex-col gap-2">
             <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-map-marker"></i> Ubicación de cierre (GPS)
             </p>
@@ -148,7 +148,7 @@
               ></iframe>
             </div>
           </div>
-          <div class="col-span-2 flex flex-col gap-2">
+          <div class="sm:col-span-2 flex flex-col gap-2">
             <p class="text-[10px] font-black text-[#86868B] dark:text-[#A1A1A6] uppercase tracking-widest flex items-center gap-1">
               <i class="pi pi-align-left"></i> Notas del cierre
             </p>
@@ -183,7 +183,7 @@
                 <p v-if="rechazoError" class="text-xs text-rose-500">{{ rechazoError }}</p>
               </div>
 
-              <div class="flex gap-3">
+              <div class="flex flex-col md:flex-row gap-3">
                 <button
                   v-if="!mostrarMotivo"
                   @click="aprobarCierre"
@@ -270,9 +270,7 @@ export default {
 
     aprobarCierre() {
       this.procesando = true
-      axios.patch(`/admin/incidencias/${this.dialogInc.id}/revisar`, { accion: 'aprobar' }, {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content },
-      }).then(() => {
+      axios.patch(`/admin/incidencias/${this.dialogInc.id}/revisar`, { accion: 'aprobar' }).then(() => {
         this._patchLocal(this.dialogInc.id, { estatus: 'resuelto', motivo_rechazo: null })
         this.$toast.add({ severity: 'success', summary: '¡Aprobada!', detail: 'Orden marcada como resuelta.', life: 3000 })
         this.dialogVisible = false
@@ -286,8 +284,6 @@ export default {
       this.procesando = true
       axios.patch(`/admin/incidencias/${this.dialogInc.id}/revisar`, {
         accion: 'rechazar', motivo_rechazo: this.motivoRechazo,
-      }, {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content },
       }).then(() => {
         this._patchLocal(this.dialogInc.id, {
           estatus: 'en proceso', motivo_rechazo: this.motivoRechazo, foto_despues: null, cerrado_en: null,

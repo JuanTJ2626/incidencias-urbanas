@@ -33,6 +33,7 @@ class Incidencias extends Model
         'notas_cierre',
         'cerrado_en',
         'motivo_rechazo',
+        'nota_admin',
     ];
 
     public function trabajador()

@@ -366,9 +366,7 @@ export default {
       form.append('lng_cierre', this.lngCierre)
       form.append('notas_cierre', this.notas)
 
-      axios.post(`/trabajador/incidencias/${this.tarea.id}/cerrar`, form, {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content },
-      }).then((response) => {
+      axios.post(`/trabajador/incidencias/${this.tarea.id}/cerrar`, form).then((response) => {
         this.$emit('success', this.tarea.id)
         this.onHide()
       }).catch(e => {

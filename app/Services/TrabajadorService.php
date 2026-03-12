@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\IncidenciaStatusChanged;
+use App\Services\SyncService;
 use App\Models\Incidencias;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
@@ -29,8 +30,8 @@ class TrabajadorService
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($inc) => array_merge($inc->toArray(), [
-                'foto_url'         => $inc->foto         ? Storage::url($inc->foto)         : null,
-                'foto_despues_url' => $inc->foto_despues ? Storage::url($inc->foto_despues) : null,
+                'foto_url'         => $this->obtenerUrlImagen($inc->foto),
+                'foto_despues_url' => $this->obtenerUrlImagen($inc->foto_despues),
             ]));
     }
 
@@ -45,8 +46,8 @@ class TrabajadorService
             ->orderBy('cerrado_en', 'desc')
             ->get()
             ->map(fn($inc) => array_merge($inc->toArray(), [
-                'foto_url'         => $inc->foto         ? Storage::url($inc->foto)         : null,
-                'foto_despues_url' => $inc->foto_despues ? Storage::url($inc->foto_despues) : null,
+                'foto_url'         => $this->obtenerUrlImagen($inc->foto),
+                'foto_despues_url' => $this->obtenerUrlImagen($inc->foto_despues),
             ]));
     }
 
@@ -103,6 +104,9 @@ class TrabajadorService
             'motivo_rechazo' => null,   // limpia rechazo anterior si había
         ]);
 
+        // SINCRONIZAR CON HOSTINGER (Guiada por el usuario)
+        SyncService::sincronizarFotoConHostinger($inc->id, $path);
+
         // Notificar al ciudadano que su reporte está en revisión
         $this->notificarCambioEstatus($inc, $estatusAnterior, 'en revisión');
 
@@ -131,6 +135,22 @@ class TrabajadorService
                 'error'         => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Helper para obtener la URL de una imagen, priorizando local y fallback a Hostinger.
+     */
+    private function obtenerUrlImagen(?string $path): ?string
+    {
+        if (!$path) return null;
+        if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::url($path);
+        }
+
+        $hostingerBase = "https://reporteurbano.site/public/uploads/";
+        return $hostingerBase . basename($path);
     }
 }
 
