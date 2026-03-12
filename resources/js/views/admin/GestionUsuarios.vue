@@ -24,7 +24,7 @@
       >
         <div class="text-center md:text-left">
           <h3 class="text-xl md:text-2xl font-black text-[#1D1D1F] dark:text-white tracking-tight">
-            Directorio de Usuarios
+            Directorio de Usuariosss
           </h3>
           <p class="text-[11px] md:text-sm font-bold text-[#86868B] dark:text-[#A1A1A6] mt-1.5">
             Gestiona los accesos y privilegios del sistema.
